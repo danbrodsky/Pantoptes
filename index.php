@@ -3,7 +3,7 @@ include_once("vendor/autoload.php");
 include_once("util.php");
 // Uncomment the following line to debug from your machine (tells your local PHP instance where to find the DB).
 // Comment it out before pushing to master!
-putenv("DATABASE_URL=postgres://eqdvefruwrhirc:57bbdd00b6b88481eebeeea8c11b52776d0ec96f9e3dd9a21d12f6d9376b9a62@ec2-54-83-27-162.compute-1.amazonaws.com:5432/dqt8lhkkbe5h7");
+//putenv("DATABASE_URL=postgres://eqdvefruwrhirc:57bbdd00b6b88481eebeeea8c11b52776d0ec96f9e3dd9a21d12f6d9376b9a62@ec2-54-83-27-162.compute-1.amazonaws.com:5432/dqt8lhkkbe5h7");
 $conn = pg_connect(getenv("DATABASE_URL"));
 $query = "SELECT tool, count(*) as number FROM packets GROUP BY tool";
 $query = pg_query($conn, $query);
