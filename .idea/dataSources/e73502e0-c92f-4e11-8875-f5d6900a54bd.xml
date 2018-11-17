@@ -26358,7 +26358,6 @@
     <role id="6497" parent="1" name="bbdgpeaylioxei">
       <ObjectId>8873833</ObjectId>
       <Inherit>1</Inherit>
-      <CanLogin>1</CanLogin>
       <ConnectionLimit>20</ConnectionLimit>
     </role>
     <role id="6498" parent="1" name="bblbvsqvxkpdtu">
@@ -29992,7 +29991,6 @@
     <role id="7187" parent="1" name="djnastzssmfxgi">
       <ObjectId>3391411</ObjectId>
       <Inherit>1</Inherit>
-      <CanLogin>1</CanLogin>
       <ConnectionLimit>20</ConnectionLimit>
     </role>
     <role id="7188" parent="1" name="djqhdzazhqjntg">
@@ -31567,7 +31565,6 @@
     <role id="7486" parent="1" name="eocyumpnizbnte">
       <ObjectId>8637695</ObjectId>
       <Inherit>1</Inherit>
-      <CanLogin>1</CanLogin>
       <ConnectionLimit>20</ConnectionLimit>
     </role>
     <role id="7487" parent="1" name="eoddbxtfynnkaw">
@@ -33403,7 +33400,6 @@
     <role id="7832" parent="1" name="fuwtuacankysxj">
       <ObjectId>4069330</ObjectId>
       <Inherit>1</Inherit>
-      <CanLogin>1</CanLogin>
       <ConnectionLimit>20</ConnectionLimit>
     </role>
     <role id="7833" parent="1" name="fvbamhdmiqjunz">
@@ -41507,7 +41503,6 @@
     <role id="9362" parent="1" name="lgvskbgcehcikl">
       <ObjectId>6221854</ObjectId>
       <Inherit>1</Inherit>
-      <CanLogin>1</CanLogin>
       <ConnectionLimit>20</ConnectionLimit>
     </role>
     <role id="9363" parent="1" name="lgwipjqwbbllxm">
@@ -41819,7 +41814,6 @@
     <role id="9421" parent="1" name="llqatoykbpyyyi">
       <ObjectId>8688055</ObjectId>
       <Inherit>1</Inherit>
-      <CanLogin>1</CanLogin>
       <ConnectionLimit>20</ConnectionLimit>
     </role>
     <role id="9422" parent="1" name="llsbwbeibphtok">
@@ -50989,7 +50983,6 @@
     <role id="11153" parent="1" name="rttgoydloxsyhp">
       <ObjectId>8868234</ObjectId>
       <Inherit>1</Inherit>
-      <CanLogin>1</CanLogin>
       <ConnectionLimit>20</ConnectionLimit>
     </role>
     <role id="11154" parent="1" name="rttxbrkystgqpe">
@@ -52628,7 +52621,6 @@
     <role id="11464" parent="1" name="swowezupedrydn">
       <ObjectId>8737278</ObjectId>
       <Inherit>1</Inherit>
-      <CanLogin>1</CanLogin>
       <ConnectionLimit>20</ConnectionLimit>
     </role>
     <role id="11465" parent="1" name="swpheyevlmykcr">
@@ -63338,8 +63330,8 @@
       <ObjectId>2200</ObjectId>
       <Comment>standard public schema</Comment>
       <Owner>eqdvefruwrhirc</Owner>
-      <IntrospectionTimestamp>2018-11-16.18:46:29.864</IntrospectionTimestamp>
-      <IntrospectionStateNumber>4260496</IntrospectionStateNumber>
+      <IntrospectionTimestamp>2018-11-17.14:56:34.912</IntrospectionTimestamp>
+      <IntrospectionStateNumber>14948178</IntrospectionStateNumber>
       <Current>1</Current>
       <Visible>1</Visible>
     </schema>
@@ -63397,7 +63389,7 @@
     <table id="13504" parent="13496" name="packets">
       <ObjectId>4336812</ObjectId>
       <Owner>eqdvefruwrhirc</Owner>
-      <StateNumber>4260429</StateNumber>
+      <StateNumber>14948178</StateNumber>
     </table>
     <column id="13505" parent="13504" name="node_id">
       <Position>1</Position>
@@ -63464,17 +63456,29 @@
       <TypeId>23</TypeId>
       <SequenceName>packets_id_seq</SequenceName>
     </column>
-    <index id="13514" parent="13504" name="packets_id_uindex">
+    <column id="13514" parent="13504" name="source_country">
+      <Position>10</Position>
+      <DataType>char(4)|0s</DataType>
+      <StateNumber>14948176</StateNumber>
+      <TypeId>1042</TypeId>
+    </column>
+    <column id="13515" parent="13504" name="destination_country">
+      <Position>11</Position>
+      <DataType>char(4)|0s</DataType>
+      <StateNumber>14948178</StateNumber>
+      <TypeId>1042</TypeId>
+    </column>
+    <index id="13516" parent="13504" name="packets_id_uindex">
       <ObjectId>4336821</ObjectId>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
     </index>
-    <index id="13515" parent="13504" name="packets_pkey">
+    <index id="13517" parent="13504" name="packets_pkey">
       <ObjectId>4336819</ObjectId>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
     </index>
-    <key id="13516" parent="13504" name="packets_pkey">
+    <key id="13518" parent="13504" name="packets_pkey">
       <ObjectId>4336820</ObjectId>
       <ColNames>id</ColNames>
       <UnderlyingIndexName>packets_pkey</UnderlyingIndexName>
