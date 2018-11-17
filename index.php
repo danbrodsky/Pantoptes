@@ -3,7 +3,7 @@ include_once("vendor/autoload.php");
 include_once("util.php");
 // Uncomment the following line to debug from your machine (tells your local PHP instance where to find the DB).
 // Comment it out before pushing to master!
-//putenv("DATABASE_URL=postgres://eqdvefruwrhirc:57bbdd00b6b88481eebeeea8c11b52776d0ec96f9e3dd9a21d12f6d9376b9a62@ec2-54-83-27-162.compute-1.amazonaws.com:5432/dqt8lhkkbe5h7");
+putenv("DATABASE_URL=postgres://eqdvefruwrhirc:57bbdd00b6b88481eebeeea8c11b52776d0ec96f9e3dd9a21d12f6d9376b9a62@ec2-54-83-27-162.compute-1.amazonaws.com:5432/dqt8lhkkbe5h7");
 $conn = pg_connect(getenv("DATABASE_URL"));
 $query = "SELECT tool, count(*) as number FROM packets GROUP BY tool";
 $query = pg_query($conn, $query);
@@ -77,8 +77,13 @@ $query = pg_query($conn, $query);
         </nav>
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+
+
+            <div class="my-4 w-100" id="piechart" style="width:900px;height:380px;"></div>
+
+            <h2>Section title</h2>
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">Dashboard</h1>
+                <h1 class="h2">Filters</h1>
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group mr-2">
                         <button class="btn btn-sm btn-outline-secondary">Share</button>
@@ -90,10 +95,6 @@ $query = pg_query($conn, $query);
                     </button>
                 </div>
             </div>
-
-            <div class="my-4 w-100" id="piechart" style="width:900px;height:380px;"></div>
-
-            <h2>Section title</h2>
             <div class="table-responsive">
                 <table class="table table-striped table-sm">
                     <thead>
