@@ -3,9 +3,9 @@ include_once("vendor/autoload.php");
 include_once("util.php");
 // Uncomment the following line to debug from your machine (tells your local PHP instance where to find the DB).
 // Comment it out before pushing to master!
-//putenv("DATABASE_URL=postgres://eqdvefruwrhirc:57bbdd00b6b88481eebeeea8c11b52776d0ec96f9e3dd9a21d12f6d9376b9a62@ec2-54-83-27-162.compute-1.amazonaws.com:5432/dqt8lhkkbe5h7");
+putenv("DATABASE_URL=postgres://eqdvefruwrhirc:57bbdd00b6b88481eebeeea8c11b52776d0ec96f9e3dd9a21d12f6d9376b9a62@ec2-54-83-27-162.compute-1.amazonaws.com:5432/dqt8lhkkbe5h7");
 $conn = pg_connect(getenv("DATABASE_URL"));
-$query = "SELECT tool, count(*) as number FROM packets GROUP BY tool";
+$query = "SELECT * FROM packets LIMIT 500";
 $query = pg_query($conn, $query);
 ?>
 
@@ -22,31 +22,6 @@ $query = pg_query($conn, $query);
 
     <!-- Custom styles for this template -->
     <link href="/css/dashboard.css" rel="stylesheet">
-
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-
-    <script type="text/javascript">
-        google.charts.load('current', {'packages': ['corechart']});
-        google.charts.setOnLoadCallback(drawChart);
-
-        function drawChart() {
-            var data = google.visualization.arrayToDataTable([
-                ['application', 'number'],
-                <?php
-                while ($row = pg_fetch_assoc($query)) {
-                    echo "['" . tool_id_to_string($row["tool"]) . "', " . $row["number"] . "],";
-                }
-                ?>
-            ]);
-            var options = {
-                title: 'Percentage of Packet by Application',
-                //is3D:true,
-                pieHole: 0.4
-            };
-            var chart = new google.visualization.PieChart(document.getElementById('piechart'));
-            chart.draw(data, options);
-        }
-    </script>
 
 </head>
 
@@ -95,21 +70,26 @@ $query = pg_query($conn, $query);
                 <table class="table table-striped table-sm">
                     <thead>
                     <tr>
-                        <th>#</th>
-                        <th>Header</th>
-                        <th>Header</th>
-                        <th>Header</th>
-                        <th>Header</th>
+
+                        <th>Packet ID</th>
+                        <th>Tool</th>
+                        <th>Packet Type</th>
+                        <th>Source IP</th>
+                        <th>Destination IP</th>
+                        <th>Source Country</th>
+                        <th>Destination Country</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td>1,001</td>
-                        <td>Lorem</td>
-                        <td>ipsum</td>
-                        <td>dolor</td>
-                        <td>sit</td>
-                    </tr>
+                    <?php
+                    while ($row = pg_fetch_assoc($query)) {
+                        echo "<tr>";
+                        echo "<td>".tool_id_to_string($row["tool"])."</td>";
+                        echo "<td>".$row["packet_type"]."</td>";
+                        echo "</tr>";
+                    }
+
+                    ?>
                     </tbody>
                 </table>
             </div>
