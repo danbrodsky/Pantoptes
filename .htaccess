@@ -1,0 +1,7 @@
+AuthType Basic
+AuthName "Panoptes. Restricted access."
+AuthUserFile ".htpasswd"
+Require valid-user
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.php [QSA,L]
