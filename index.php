@@ -1,11 +1,8 @@
 <?php
 include_once("vendor/autoload.php");
 include_once("util.php");
-// Uncomment the following line to debug from your machine (tells your local PHP instance where to find the DB).
-// Comment it out before pushing to master!
-putenv("DATABASE_URL=postgres://eqdvefruwrhirc:57bbdd00b6b88481eebeeea8c11b52776d0ec96f9e3dd9a21d12f6d9376b9a62@ec2-54-83-27-162.compute-1.amazonaws.com:5432/dqt8lhkkbe5h7");
-$conn = pg_connect(getenv("DATABASE_URL"));
-$query = "SELECT * FROM packets LIMIT 500";
+
+$query = "SELECT * FROM packets ORDER BY packets.id desc LIMIT 500 ";
 $query = pg_query($conn, $query);
 ?>
 
@@ -24,7 +21,7 @@ $query = pg_query($conn, $query);
     <link href="/css/dashboard.css" rel="stylesheet">
 
     <script src='https://api.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.js'></script>
-    <link href='https://api.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.css' rel='stylesheet' />
+    <link href='https://api.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.css' rel='stylesheet'/>
 
 </head>
 
@@ -48,7 +45,8 @@ $query = pg_query($conn, $query);
                     <li class="nav-item">
                         <a class="nav-link active" href="#">
                             <span data-feather="home"></span>
-                            Dashboard <span class="sr-only">(current)</span>
+                            Dashboard
+
                         </a>
                     </li>
                 </ul>
@@ -58,18 +56,53 @@ $query = pg_query($conn, $query);
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
             <div class="btn-toolbar mb-2 mb-md-0" style="padding-top: 20px;">
 
-
-
-                <h1 class="h2">Dashboard</h1>
-                <div class="btn-toolbar mb-2 mb-md-0" style="position: absolute; right: 0;">
-                    <div class="btn-group mr-2">
-                        <button class="btn btn-sm btn-outline-secondary">Share</button>
-                        <button class="btn btn-sm btn-outline-secondary">Export</button>
+                <h1 class="h2">Dashboard
+                    <small class="text-muted"><?php echo get_packet_count($conn); ?> packets collected</small>
+                </h1>
+                <div class="btn-toolbar mb-2 mb-md-0" style="position: absolute; right: 20px;">
+                    <!-- Tool chooser -->
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle btn-sm" type="button"
+                                id="dropdownMenuButton"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                style="margin-right: 10px;">
+                            <i data-feather="server"></i> Tool
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="#">Libprotoident</a>
+                            <a class="dropdown-item" href="#">nDPI</a>
+                        </div>
                     </div>
-                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle">
-                        <span data-feather="calendar"></span>
-                        This week
-                    </button>
+                    <!-- END Tool chooser -->
+                    <!-- Protocol chooser -->
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle btn-sm" type="button"
+                                id="dropdownMenuButton"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                style="margin-right: 10px;">
+                            <i data-feather="activity"></i> Protocols
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <?php foreach (get_protocols($conn) as $protocol_name) {
+                                echo "<a class=\"dropdown-item\" href=\"#\">" . $protocol_name . "</a>";
+                            } ?>
+                        </div>
+                    </div>
+                    <!-- END Protocol chooser -->
+                    <!-- Country chooser -->
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle btn-sm" type="button"
+                                id="dropdownMenuButton"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i data-feather="flag"></i> Countries
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <?php foreach (get_countries($conn) as $country_code) {
+                                echo "<a class=\"dropdown-item\" href=\"#\">" . $country_code . "</a>";
+                            } ?>
+                        </div>
+                    </div>
+                    <!-- END Country chooser -->
                 </div>
             </div>
 
@@ -106,13 +139,13 @@ $query = pg_query($conn, $query);
                     while ($row = pg_fetch_assoc($query)) {
                         array_push($mapRows, $row); // adds the row to the map array
                         echo "<tr>";
-                        echo "<td>".$row["id"]."</td>";
-                        echo "<td>".tool_id_to_string($row["tool"])."</td>";
-                        echo "<td>".$row["packet_type"]."</td>";
-                        echo "<td>".$row["source_ip"]."</td>";
-                        echo "<td>".$row["destination_ip"]."</td>";
-                        echo "<td>".$row["source_country"]."</td>";
-                        echo "<td>".$row["destination_country"]."</td>";
+                        echo "<td>" . $row["id"] . "</td>";
+                        echo "<td>" . tool_id_to_string($row["tool"]) . "</td>";
+                        echo "<td>" . $row["packet_type"] . "</td>";
+                        echo "<td>" . $row["source_ip"] . "</td>";
+                        echo "<td>" . $row["destination_ip"] . "</td>";
+                        echo "<td>" . $row["source_country"] . "</td>";
+                        echo "<td>" . $row["destination_country"] . "</td>";
                         echo "</tr>";
                     }
                     ?>
@@ -122,7 +155,7 @@ $query = pg_query($conn, $query);
             <script type="text/javascript">
                 map.on("load", function () {
                     /* Image: An image is loaded and added to the map. */
-                    map.loadImage("https://i.imgur.com/MK4NUzI.png", function(error, image) {
+                    map.loadImage("https://i.imgur.com/MK4NUzI.png", function (error, image) {
                         if (error) throw error;
                         map.addImage("custom-marker", image);
                         /* Style layer: A style layer ties together the source and image and specifies how they are displayed on the map. */
@@ -134,12 +167,13 @@ $query = pg_query($conn, $query);
                                 type: "geojson",
                                 data: {
                                     type: "FeatureCollection",
-                                    features:[<?php
-                                            foreach ($mapRows as $row) {
-                                                echo "{\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[".$row["source_longitude"].",".$row["source_latitude"]."]}},";
-                                            }
-                                            ?>
-                                        ]}
+                                    features: [<?php
+                                        foreach ($mapRows as $row) {
+                                            echo "{\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[" . $row["source_longitude"] . "," . $row["source_latitude"] . "]}},";
+                                        }
+                                        ?>
+                                    ]
+                                }
                             },
                             layout: {
                                 "icon-image": "custom-marker",
@@ -156,6 +190,7 @@ $query = pg_query($conn, $query);
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="/js/popper.min.js"></script>
 <script src="/js/bootstrap.min.js"></script>
 
 <!-- Icons -->
