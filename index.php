@@ -160,8 +160,8 @@ $query = pg_query($conn, $query);
                         map.addImage("custom-marker", image);
                         /* Style layer: A style layer ties together the source and image and specifies how they are displayed on the map. */
                         map.addLayer({
-                            id: "markers",
-                            type: "symbol",
+                            id: "route",
+                            type: "line",
                             /* Source: A data source specifies the geographic coordinate where the image marker gets placed. */
                             source: {
                                 type: "geojson",
@@ -169,14 +169,21 @@ $query = pg_query($conn, $query);
                                     type: "FeatureCollection",
                                     features: [<?php
                                         foreach ($mapRows as $row) {
-                                            echo "{\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[" . $row["source_longitude"] . "," . $row["source_latitude"] . "]}},";
+                                            if ($row["source_longitude"] != 0.0 && $row["source_latitude"] != 0.0 &&
+                                                $row["destination_longitude"] != 0.0 && $row["destination_latitude"])
+                                            echo "{\"type\":\"Feature\",\"geometry\":{\"type\":\"LineString\",\"coordinates\":[[" . $row["source_longitude"] . "," . $row["source_latitude"] . "], [" . $row["destination_longitude"] . "," . $row["destination_latitude"] . "]]}},";
                                         }
                                         ?>
                                     ]
                                 }
                             },
                             layout: {
-                                "icon-image": "custom-marker",
+                                "line-join": "round",
+                                "line-cap": "round"
+                            },
+                            "paint": {
+                                "line-color": "red",
+                                "line-width": 1
                             }
                         });
                     });
