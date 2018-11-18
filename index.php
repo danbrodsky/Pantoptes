@@ -102,7 +102,9 @@ $query = pg_query($conn, $query);
                     </thead>
                     <tbody>
                     <?php
+                    $mapRows = array();
                     while ($row = pg_fetch_assoc($query)) {
+                        array_push($mapRows, $row); // adds the row to the map array
                         echo "<tr>";
                         echo "<td>".$row["id"]."</td>";
                         echo "<td>".tool_id_to_string($row["tool"])."</td>";
@@ -113,11 +115,39 @@ $query = pg_query($conn, $query);
                         echo "<td>".$row["destination_country"]."</td>";
                         echo "</tr>";
                     }
-
                     ?>
                     </tbody>
                 </table>
             </div>
+            <script type="text/javascript">
+                map.on("load", function () {
+                    /* Image: An image is loaded and added to the map. */
+                    map.loadImage("https://i.imgur.com/MK4NUzI.png", function(error, image) {
+                        if (error) throw error;
+                        map.addImage("custom-marker", image);
+                        /* Style layer: A style layer ties together the source and image and specifies how they are displayed on the map. */
+                        map.addLayer({
+                            id: "markers",
+                            type: "symbol",
+                            /* Source: A data source specifies the geographic coordinate where the image marker gets placed. */
+                            source: {
+                                type: "geojson",
+                                data: {
+                                    type: "FeatureCollection",
+                                    features:[<?php
+                                            foreach ($mapRows as $row) {
+                                                echo "{\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[".$row["source_longitude"].",".$row["source_latitude"]."]}},";
+                                            }
+                                            ?>
+                                        ]}
+                            },
+                            layout: {
+                                "icon-image": "custom-marker",
+                            }
+                        });
+                    });
+                });
+            </script>
         </main>
     </div>
 </div>
