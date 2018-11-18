@@ -23,6 +23,9 @@ $query = pg_query($conn, $query);
     <!-- Custom styles for this template -->
     <link href="/css/dashboard.css" rel="stylesheet">
 
+    <script src='https://api.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.css' rel='stylesheet' />
+
 </head>
 
 <body>
@@ -54,6 +57,9 @@ $query = pg_query($conn, $query);
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
             <div class="btn-toolbar mb-2 mb-md-0">
+
+
+
                 <h1 class="h2">Dashboard</h1>
                 <div class="btn-toolbar mb-2 mb-md-0" style="position: absolute; right: 0;">
                     <div class="btn-group mr-2">
@@ -66,6 +72,20 @@ $query = pg_query($conn, $query);
                     </button>
                 </div>
             </div>
+
+            <div class="my-4 w-100" id='map'></div>
+
+            <script type="text/javascript">
+                mapboxgl.accessToken = 'pk.eyJ1IjoiYWdvdHRhcmRvIiwiYSI6ImlQNEYtcWcifQ.2GSJXDBB7oMK61Ey9Dtzww';
+                var map = new mapboxgl.Map({
+                    container: 'map',
+                    style: 'mapbox://styles/mapbox/dark-v9',
+                    center: [-123.1, 49.25],
+                    zoom: 5
+                });
+                map.addControl(new mapboxgl.NavigationControl());
+            </script>
+
             <div class="table-responsive">
                 <table class="table table-striped table-sm">
                     <thead>
@@ -101,7 +121,6 @@ $query = pg_query($conn, $query);
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-<script src="/js/popper.min.js"></script>
 <script src="/js/bootstrap.min.js"></script>
 
 <!-- Icons -->
