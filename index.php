@@ -56,7 +56,7 @@ $query = pg_query($conn, $query);
         </nav>
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-            <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-toolbar mb-2 mb-md-0" style="padding-top: 20px;">
 
 
 
@@ -73,7 +73,7 @@ $query = pg_query($conn, $query);
                 </div>
             </div>
 
-            <div class="my-4 w-100" id='map'></div>
+            <div class="my-4 w-100" id='map' style="height: 300px;"></div>
 
             <script type="text/javascript">
                 mapboxgl.accessToken = 'pk.eyJ1IjoiYWdvdHRhcmRvIiwiYSI6ImlQNEYtcWcifQ.2GSJXDBB7oMK61Ey9Dtzww';
