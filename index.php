@@ -84,8 +84,13 @@ $query = pg_query($conn, $query);
                     <?php
                     while ($row = pg_fetch_assoc($query)) {
                         echo "<tr>";
+                        echo "<td>".$row["id"]."</td>";
                         echo "<td>".tool_id_to_string($row["tool"])."</td>";
                         echo "<td>".$row["packet_type"]."</td>";
+                        echo "<td>".$row["source_ip"]."</td>";
+                        echo "<td>".$row["destination_ip"]."</td>";
+                        echo "<td>".$row["source_country"]."</td>";
+                        echo "<td>".$row["destination_country"]."</td>";
                         echo "</tr>";
                     }
 
