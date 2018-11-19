@@ -2,8 +2,14 @@
 include_once("vendor/autoload.php");
 include_once("util.php");
 
-$query = "SELECT * FROM packets ORDER BY packets.id desc LIMIT 500 ";
-$query = pg_query($conn, $query);
+$no_of_records_per_page = 30;
+
+$total_pages = "SELECT COUNT(*) FROM packets";
+$result= pg_query($conn, $total_pages);
+$total_rows = pg_fetch_array($result)[0];
+$total_pages = ceil($total_rows / $no_of_records_per_page);
+
+$query = "SELECT * FROM packets ORDER BY packets.id desc";
 ?>
 
 <!doctype html>
@@ -117,39 +123,22 @@ $query = pg_query($conn, $query);
                 });
                 map.addControl(new mapboxgl.NavigationControl());
             </script>
-
-            <div class="table-responsive">
-                <table class="table table-striped table-sm">
-                    <thead>
-                    <tr>
-
-                        <th>Packet ID</th>
-                        <th>Tool</th>
-                        <th>Packet Type</th>
-                        <th>Source IP</th>
-                        <th>Destination IP</th>
-                        <th>Source Country</th>
-                        <th>Destination Country</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <?php
-                    $mapRows = array();
-                    while ($row = pg_fetch_assoc($query)) {
-                        array_push($mapRows, $row); // adds the row to the map array
-                        echo "<tr>";
-                        echo "<td>" . $row["id"] . "</td>";
-                        echo "<td>" . tool_id_to_string($row["tool"]) . "</td>";
-                        echo "<td>" . $row["packet_type"] . "</td>";
-                        echo "<td>" . $row["source_ip"] . "</td>";
-                        echo "<td>" . $row["destination_ip"] . "</td>";
-                        echo "<td>" . $row["source_country"] . "</td>";
-                        echo "<td>" . $row["destination_country"] . "</td>";
-                        echo "</tr>";
-                    }
-                    ?>
-                    </tbody>
-                </table>
+            <div>
+                    <button type="button" class="paginate-prev btn btn-danger" style="float: left; background: black;">&laquo; Prev</button>
+                    <button type="button"class="paginate-next btn btn-danger" style="float: right; background: black;">Next &raquo;</button>
+                <div style="margin-bottom: 5%" align="center">
+                    <ul class='pagination text-center'>
+                        <?php if(!empty($total_pages)):
+                            for($i=1; $i<=$total_pages; $i++):
+                                if($i == 1):?>
+                                    <li hidden class='active' id="<?php echo $i;?>"><a href='pagination.php?pageno=<?php echo $i;?>'><?php echo $i;?></a></li>
+                                <?php else:?>
+                                    <li hidden id="<?php echo $i;?>"><a href='pagination.php?pageno=<?php echo $i;?>'><?php echo $i;?></a></li>
+                                <?php endif;?>
+                            <?php endfor;
+                        endif;?>
+                </div>
+                <div id="table-content" ></div>
             </div>
             <script type="text/javascript">
                 map.on("load", function () {
@@ -167,10 +156,15 @@ $query = pg_query($conn, $query);
                                 data: {
                                     type: "FeatureCollection",
                                     features: [<?php
+                                        $mapRows = array();
+                                        $query = pg_query($conn, $query);
+                                        while ($row = pg_fetch_assoc($query)) {
+                                            array_push($mapRows, $row); // adds the row to the map array
+                                        }
                                         foreach ($mapRows as $row) {
                                             if ($row["source_longitude"] != 0.0 && $row["source_latitude"] != 0.0 &&
                                                 $row["destination_longitude"] != 0.0 && $row["destination_latitude"])
-                                            echo "{\"type\":\"Feature\",\"geometry\":{\"type\":\"LineString\",\"coordinates\":[[" . $row["source_longitude"] . "," . $row["source_latitude"] . "], [" . $row["destination_longitude"] . "," . $row["destination_latitude"] . "]]}},";
+                                                echo "{\"type\":\"Feature\",\"geometry\":{\"type\":\"LineString\",\"coordinates\":[[" . $row["source_longitude"] . "," . $row["source_latitude"] . "], [" . $row["destination_longitude"] . "," . $row["destination_latitude"] . "]]}},";
                                         }
                                         ?>
                                     ]
@@ -237,5 +231,28 @@ $query = pg_query($conn, $query);
     });
 </script>
 </body>
+<script>
+    jQuery(document).ready(function() {
+        jQuery("#table-content").load("pagination.php?pageno=1");
+
+        let prev = $("button.paginate-prev");
+        let next = $("button.paginate-next");
+
+        next.click(function() {
+            if ($('li.active').attr('id') == <?php echo $total_pages; ?>)
+                return;
+            $('li.active').removeClass('active').next().addClass('active');
+            let pageNum = $('li.active').attr('id');
+            jQuery("#table-content").load("pagination.php?pageno=" + pageNum);
+        });
+        prev.click(function() {
+            if ($('li.active').attr('id') == 1)
+                return;
+            $('li.active').removeClass('active').prev().addClass('active');
+            let pageNum = $('li.active').attr('id');
+            jQuery("#table-content").load("pagination.php?pageno=" + pageNum);
+        });
+    });
+</script>
 </html>
 
