@@ -43,19 +43,8 @@ $query = "SELECT * FROM packets ORDER BY packets.id desc";
 
 <div class="container-fluid">
     <div class="row">
-        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
-            <div class="sidebar-sticky">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#">
-                            <span data-feather="home"></span>
-                            Dashboard
 
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+        <?php include "sidemenu.php"; ?>
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
             <div class="btn-toolbar mb-2 mb-md-0" style="padding-top: 20px;">
