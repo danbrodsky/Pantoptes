@@ -8,7 +8,6 @@ $total_pages = "SELECT COUNT(*) FROM packets";
 $result= pg_query($conn, $total_pages);
 $total_rows = pg_fetch_array($result)[0];
 $total_pages = ceil($total_rows / $no_of_records_per_page);
-
 $query = "SELECT * FROM packets ORDER BY packets.id desc";
 ?>
 
@@ -74,8 +73,8 @@ $query = "SELECT * FROM packets ORDER BY packets.id desc";
                             <i data-feather="server"></i> Tool
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a class="dropdown-item" href="#">Libprotoident</a>
-                            <a class="dropdown-item" href="#">nDPI</a>
+                            <a id="0" class="tool dropdown-item" href="">Libprotoident</a>
+                            <a id="1" class="tool dropdown-item" href="">nDPI</a>
                         </div>
                     </div>
                     <!-- END Tool chooser -->
@@ -89,7 +88,7 @@ $query = "SELECT * FROM packets ORDER BY packets.id desc";
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <?php foreach (get_protocols($conn) as $protocol_name) {
-                                echo "<a class=\"dropdown-item\" href=\"#\">" . $protocol_name . "</a>";
+                                echo "<a id=\"$protocol_name\" class=\"protocol dropdown-item\" href=\"\">" . $protocol_name . "</a>";
                             } ?>
                         </div>
                     </div>
@@ -103,7 +102,7 @@ $query = "SELECT * FROM packets ORDER BY packets.id desc";
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <?php foreach (get_countries($conn) as $country_code) {
-                                echo "<a class=\"dropdown-item\" href=\"#\">" . $country_code . "</a>";
+                                echo "<a id=\"$country_code\" class=\"country dropdown-item\" href=\"\">" . $country_code . "</a>";
                             } ?>
                         </div>
                     </div>
@@ -131,9 +130,9 @@ $query = "SELECT * FROM packets ORDER BY packets.id desc";
                         <?php if(!empty($total_pages)):
                             for($i=1; $i<=$total_pages; $i++):
                                 if($i == 1):?>
-                                    <li hidden class='active' id="<?php echo $i;?>"><a href='pagination.php?pageno=<?php echo $i;?>'><?php echo $i;?></a></li>
+                                    <li hidden class='active' id="<?php echo $i;?>"><a href=''><?php echo $i;?></a></li>
                                 <?php else:?>
-                                    <li hidden id="<?php echo $i;?>"><a href='pagination.php?pageno=<?php echo $i;?>'><?php echo $i;?></a></li>
+                                    <li hidden id="<?php echo $i;?>"><a href=''><?php echo $i;?></a></li>
                                 <?php endif;?>
                             <?php endfor;
                         endif;?>
@@ -156,7 +155,6 @@ $query = "SELECT * FROM packets ORDER BY packets.id desc";
                                 data: {
                                     type: "FeatureCollection",
                                     features: [<?php
-                                        $mapRows = array();
                                         $query = pg_query($conn, $query);
                                         while ($row = pg_fetch_assoc($query)) {
                                             array_push($mapRows, $row); // adds the row to the map array
@@ -233,25 +231,50 @@ $query = "SELECT * FROM packets ORDER BY packets.id desc";
 </body>
 <script>
     jQuery(document).ready(function() {
-        jQuery("#table-content").load("pagination.php?pageno=1");
+        jQuery("#table-content").load("pagination.php");
 
         let prev = $("button.paginate-prev");
         let next = $("button.paginate-next");
 
         next.click(function() {
-            if ($('li.active').attr('id') == <?php echo $total_pages; ?>)
+            if ($('li.active').attr('id') == <?php echo $total_pages; ?> || $('#table-content tr').length < 30)
                 return;
             $('li.active').removeClass('active').next().addClass('active');
-            let pageNum = $('li.active').attr('id');
-            jQuery("#table-content").load("pagination.php?pageno=" + pageNum);
+            updateTable()
         });
         prev.click(function() {
             if ($('li.active').attr('id') == 1)
                 return;
             $('li.active').removeClass('active').prev().addClass('active');
-            let pageNum = $('li.active').attr('id');
-            jQuery("#table-content").load("pagination.php?pageno=" + pageNum);
+            updateTable()
         });
+
+        $(".protocol").on('click', function(e){
+            changeAttr.call(this, '.protocol', e);
+        });
+        $(".country").on('click', function(e){
+            changeAttr.call(this, '.country', e);
+        });
+        $(".tool").on('click', function(e){
+            changeAttr.call(this, '.tool', e);
+        });
+
+        function changeAttr(attr, e) {
+            e.preventDefault();
+            jQuery(attr).removeClass('active');
+            jQuery(this).addClass('active');
+            $('ul.pagination > li.active').removeClass('active');
+            $('ul.pagination > li:first').addClass('active');
+            updateTable()
+        }
+
+        function updateTable() {
+            let pageNum = $.trim($('ul.pagination > li.active').attr('id'));
+            let protocol = $.trim($('.protocol.active').attr('id'));
+            let country = $.trim($('.country.active').attr('id'));
+            let tool = $.trim($('.tool.active').attr('id'));
+            jQuery("#table-content").load("pagination.php?pageno=" + pageNum + "&protocol=" + protocol + "&country=" + country + "&tool=" + tool);
+        }
     });
 </script>
 </html>
