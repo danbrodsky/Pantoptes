@@ -156,6 +156,7 @@ $query = "SELECT * FROM packets ORDER BY packets.id desc";
                                     type: "FeatureCollection",
                                     features: [<?php
                                         $query = pg_query($conn, $query);
+                                        $mapRows = array();
                                         while ($row = pg_fetch_assoc($query)) {
                                             array_push($mapRows, $row); // adds the row to the map array
                                         }
