@@ -8,7 +8,7 @@ $total_pages = "SELECT COUNT(*) FROM packets";
 $result= pg_query($conn, $total_pages);
 $total_rows = pg_fetch_array($result)[0];
 $total_pages = ceil($total_rows / $no_of_records_per_page);
-
+$mapRows = array();
 $query = "SELECT * FROM packets ORDER BY packets.id desc";
 ?>
 
@@ -74,8 +74,8 @@ $query = "SELECT * FROM packets ORDER BY packets.id desc";
                             <i data-feather="server"></i> Tool
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a class="dropdown-item" href="#">Libprotoident</a>
-                            <a class="dropdown-item" href="#">nDPI</a>
+                            <a class="dropdown-item" href="pagination.php?tool=0">Libprotoident</a>
+                            <a class="dropdown-item" href="pagination.php?tool=1">nDPI</a>
                         </div>
                     </div>
                     <!-- END Tool chooser -->
@@ -89,7 +89,7 @@ $query = "SELECT * FROM packets ORDER BY packets.id desc";
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <?php foreach (get_protocols($conn) as $protocol_name) {
-                                echo "<a class=\"dropdown-item\" href=\"#\">" . $protocol_name . "</a>";
+                                echo "<a class=\"dropdown-item\" href=\"pagination.php?protocol=${protocol_name}\">" . $protocol_name . "</a>";
                             } ?>
                         </div>
                     </div>
@@ -103,7 +103,7 @@ $query = "SELECT * FROM packets ORDER BY packets.id desc";
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <?php foreach (get_countries($conn) as $country_code) {
-                                echo "<a class=\"dropdown-item\" href=\"#\">" . $country_code . "</a>";
+                                echo "<a class=\"dropdown-item\" href=\"pagination.php?country=${country_code}\">" . $country_code . "</a>";
                             } ?>
                         </div>
                     </div>
@@ -156,7 +156,6 @@ $query = "SELECT * FROM packets ORDER BY packets.id desc";
                                 data: {
                                     type: "FeatureCollection",
                                     features: [<?php
-                                        $mapRows = array();
                                         $query = pg_query($conn, $query);
                                         while ($row = pg_fetch_assoc($query)) {
                                             array_push($mapRows, $row); // adds the row to the map array
@@ -233,7 +232,7 @@ $query = "SELECT * FROM packets ORDER BY packets.id desc";
 </body>
 <script>
     jQuery(document).ready(function() {
-        jQuery("#table-content").load("pagination.php?pageno=1");
+        jQuery("#table-content").load("pagination.php");
 
         let prev = $("button.paginate-prev");
         let next = $("button.paginate-next");

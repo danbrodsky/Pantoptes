@@ -65,6 +65,26 @@ function get_countries($conn)
     return $acc;
 }
 
+/**
+ * Print a row in the table if cond is true.
+ * @param $row is an associative array of values to print to inline HTML.
+ *        $mapRows the global map array.
+ * @return void
+ */
+function print_row($arr, $row)
+{
+    array_push($arr, $row); // adds the row to the map array
+    echo "<tr>";
+    echo "<td>" . $row["id"] . "</td>";
+    echo "<td>" . tool_id_to_string($row["tool"]) . "</td>";
+    echo "<td>" . $row["packet_type"] . "</td>";
+    echo "<td>" . $row["source_ip"] . "</td>";
+    echo "<td>" . $row["destination_ip"] . "</td>";
+    echo "<td>" . $row["source_country"] . "</td>";
+    echo "<td>" . $row["destination_country"] . "</td>";
+    echo "</tr>";
+}
+
 function get_packet_count($conn) {
     $query = "SELECT count(id) FROM packets";
     $query = pg_query($conn, $query);

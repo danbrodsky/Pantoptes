@@ -18,7 +18,6 @@ $query = pg_query($conn, $query);
 <table class="table table-striped table-sm">
     <thead>
     <tr>
-
         <th>Packet ID</th>
         <th>Tool</th>
         <th>Packet Type</th>
@@ -31,16 +30,28 @@ $query = pg_query($conn, $query);
     <tbody>
     <?php
     while ($row = pg_fetch_assoc($query)) {
-        array_push($mapRows, $row); // adds the row to the map array
-        echo "<tr>";
-        echo "<td>" . $row["id"] . "</td>";
-        echo "<td>" . tool_id_to_string($row["tool"]) . "</td>";
-        echo "<td>" . $row["packet_type"] . "</td>";
-        echo "<td>" . $row["source_ip"] . "</td>";
-        echo "<td>" . $row["destination_ip"] . "</td>";
-        echo "<td>" . $row["source_country"] . "</td>";
-        echo "<td>" . $row["destination_country"] . "</td>";
-        echo "</tr>";
+        if (!isset($_GET['tool']) && !isset($_GET['protocol']) && !isset($_GET['country'])) {
+            array_push($mapRows, $row); // adds the row to the map array
+            echo "<tr>";
+            echo "<td>" . $row["id"] . "</td>";
+            echo "<td>" . tool_id_to_string($row["tool"]) . "</td>";
+            echo "<td>" . $row["packet_type"] . "</td>";
+            echo "<td>" . $row["source_ip"] . "</td>";
+            echo "<td>" . $row["destination_ip"] . "</td>";
+            echo "<td>" . $row["source_country"] . "</td>";
+            echo "<td>" . $row["destination_country"] . "</td>";
+            echo "</tr>";
+        } else {
+            // get URL params
+            // TODO: sanitize the GET request input for all of these.
+            if (isset($_GET['tool']) && (strval($_GET['tool']) == $row['tool'])) {
+                print_row($mapRows, $row);
+            } else if (isset($_GET['protocol']) && ($row['packet_type'] == $_GET['protocol'])) {
+                print_row($mapRows, $row);
+            } else if (isset($_GET['country'])  && (trim($row['source_country']) == trim($_GET['country']))) {
+                print_row($mapRows, $row);
+            }
+        }
     }
     ?>
     </tbody>
