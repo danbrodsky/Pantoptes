@@ -32,9 +32,21 @@ $paginate = "ORDER BY packets.id desc LIMIT $no_of_records_per_page OFFSET $offs
     <?php
 
     // TODO: SANITATION
-    if (isset($_GET["protocol"]) and $_GET["protocol"] != '') { $filter  .= "packet_type = '" . $_GET["protocol"] ."'"; } else { $filter  .= "1=1"; };
-    if (isset($_GET["country"]) and $_GET["country"] != '') { $filter  .= " AND source_country = '" . $_GET["country"] ."'"; };
-    if (isset($_GET["tool"]) and $_GET["tool"] != '') { $filter  .= " AND tool = " . $_GET["tool"]; };
+    $protocol = "";
+    $tool = "";
+    $country = "";
+    if (isset($_GET["protocol"])) {
+        $protocol = preg_replace('/[^-a-zA-Z0-9_]/', '', $_GET["protocol"]);
+    }
+    if (isset($_GET["country"])) {
+        $country = preg_replace('/[^-a-zA-Z0-9_]/', '', $_GET["country"]);
+    }
+    if (isset($_GET["tool"])) {
+        $tool = preg_replace('/[^-a-zA-Z0-9_]/', '', $_GET["tool"]);
+    }
+    if ($protocol != '') { $filter  .= "packet_type = '" . $_GET["protocol"] ."'"; } else { $filter  .= "1=1"; };
+    if ($country != '') { $filter  .= " AND source_country = '" . $_GET["country"] ."'"; };
+    if ($tool != '') { $filter  .= " AND tool = " . $_GET["tool"]; };
 
     $query = $query.' '.$filter.' '.$paginate;
     $query = pg_query($conn, $query);
