@@ -123,9 +123,10 @@ $query = "SELECT * FROM packets ORDER BY packets.id desc";
                 map.addControl(new mapboxgl.NavigationControl());
             </script>
             <div>
-                    <button type="button" class="paginate-prev btn btn-danger" style="float: left; background: black;">&laquo; Prev</button>
-                    <button type="button"class="paginate-next btn btn-danger" style="float: right; background: black;">Next &raquo;</button>
-                <div style="margin-bottom: 5%" align="center">
+                    <button type="button" class="paginate-prev btn btn-outline-secondary" style="float: left;">&laquo; Prev</button>
+                    <button type="button" class="paginate-next btn btn-outline-secondary" style="float: right;">Next &raquo;</button>
+                <p>&nbsp;</p>
+                <div style="margin-top: 0%; margin-bottom: 5%" align="center">
                     <ul class='pagination text-center'>
                         <?php if(!empty($total_pages)):
                             for($i=1; $i<=$total_pages; $i++):

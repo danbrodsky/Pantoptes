@@ -24,8 +24,6 @@ $paginate = "ORDER BY packets.id desc LIMIT $no_of_records_per_page OFFSET $offs
         <th>Packet Type</th>
         <th>Source IP</th>
         <th>Destination IP</th>
-        <th>Source Country</th>
-        <th>Destination Country</th>
     </tr>
     </thead>
     <tbody>
@@ -51,14 +49,14 @@ $paginate = "ORDER BY packets.id desc LIMIT $no_of_records_per_page OFFSET $offs
     $query = $query.' '.$filter.' '.$paginate;
     $query = pg_query($conn, $query);
     while ($row = pg_fetch_assoc($query)) {
+        $srcCountry = $row["source_country"] !== null ? "<strong><abbr class=\"initialism\">".$row["source_country"]."</abbr></strong> " : "";
+        $dstCountry = $row["destination_country"] !== null ? "<strong><abbr class=\"initialism\">".$row["destination_country"]."</abbr></strong> " : "";
         echo "<tr>";
         echo "<td>" . $row["id"] . "</td>";
         echo "<td>" . tool_id_to_string($row["tool"]) . "</td>";
-        echo "<td>" . $row["packet_type"] . "</td>";
-        echo "<td>" . $row["source_ip"] . "</td>";
-        echo "<td>" . $row["destination_ip"] . "</td>";
-        echo "<td>" . $row["source_country"] . "</td>";
-        echo "<td>" . $row["destination_country"] . "</td>";
+        echo "<td>" . $row["packet_type"] . " <small><strong>". $row["source_port"] ."→". $row["destination_port"] ."</strong></small></td>";
+        echo "<td>" . $row["source_ip"] . " ".$srcCountry."</td>";
+        echo "<td>" . $row["destination_ip"] . " ".$dstCountry."</td>";
         echo "</tr>";
     }
     ?>
