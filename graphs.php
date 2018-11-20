@@ -37,10 +37,18 @@ include_once("graphing_utils.php");
         <?php include "sidemenu.php"; ?>
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-            <canvas class="my-4 w-100 col-md-6" id="myChart"></canvas>
+            <canvas class="my-4 w-100 col-md-6" id="packet_chart"></canvas>
+        </main>
+
+    </div>
+    <div>
+        <?php include "sidemenu.php"; ?>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4" style="float: right;">
+            <canvas class="my-4 w-100 col-md-6" id="srccountry_chart"></canvas>
         </main>
     </div>
 </div>
+
 
 <!-- Bootstrap core JavaScript
 ================================================== -->
@@ -73,12 +81,45 @@ $colors = json_encode($colors, JSON_PRETTY_PRINT);
 ?>
 
 <script>
-    var ctx = document.getElementById("myChart");
+    var ctx = document.getElementById("packet_chart");
     // And for a doughnut chart
     var data = {
         datasets: [{
             data: <?php echo $counts; ?>,
             backgroundColor: <?php echo $colors; ?>
+        }],
+
+        // These labels appear in the legend and in the tooltips when hovering different arcs
+        labels: <?php echo $types; ?>
+    };
+    var myDoughnutChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: data,
+        options: []
+    });
+</script>
+
+<?php
+$country_types = num_countries($conn);
+$types = json_encode(array_column($country_types, "source_country"), JSON_PRETTY_PRINT);
+$country_counts = json_encode(array_column($country_types, "cnt"), JSON_PRETTY_PRINT);
+$country_colors = array();
+for ($i = 0; $i < count($country_types); $i++) {
+    $r = rand(0,200);
+    $g = rand(0,200);
+    $b = rand(0,200);
+    array_push($country_colors, "rgba(".$r.", ".$g.", ".$b.", 1)");
+}
+$country_colors = json_encode($country_colors, JSON_PRETTY_PRINT);
+?>
+
+<script>
+    var ctx = document.getElementById("srccountry_chart");
+    // And for a doughnut chart
+    var data = {
+        datasets: [{
+            data: <?php echo $country_counts; ?>,
+            backgroundColor: <?php echo $country_colors; ?>
         }],
 
         // These labels appear in the legend and in the tooltips when hovering different arcs
