@@ -90,3 +90,11 @@ function get_packet_count($conn) {
     $query = pg_query($conn, $query);
     return pg_fetch_result($query,0,0);
 }
+
+function debug_to_console( $data) {
+    $output = $data;
+    if ( is_array( $output ) )
+        $output = implode( ',', $output);
+
+    echo "<script>console.log( 'Debug Objects: " . $output . "' );</script>";
+}
