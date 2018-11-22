@@ -64,6 +64,7 @@ $query = "SELECT * FROM packets ORDER BY packets.id desc";
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <a id="0" class="tool dropdown-item" href="">Libprotoident</a>
                             <a id="1" class="tool dropdown-item" href="">nDPI</a>
+                            <a id="" class="tool dropdown-item" href="" >&#x2a;</a>
                         </div>
                     </div>
                     <!-- END Tool chooser -->
@@ -79,6 +80,7 @@ $query = "SELECT * FROM packets ORDER BY packets.id desc";
                             <?php foreach (get_protocols($conn) as $protocol_name) {
                                 echo "<a id=\"$protocol_name\" class=\"protocol dropdown-item\" href=\"\">" . $protocol_name . "</a>";
                             } ?>
+                            <a id="" class="protocol dropdown-item" href="" >&#x2a;</a>
                         </div>
                     </div>
                     <!-- END Protocol chooser -->
@@ -93,6 +95,7 @@ $query = "SELECT * FROM packets ORDER BY packets.id desc";
                             <?php foreach (get_countries($conn) as $country_code) {
                                 echo "<a id=\"$country_code\" class=\"country dropdown-item\" href=\"\">" . $country_code . "</a>";
                             } ?>
+                            <a id="" class="country dropdown-item" href="" >&#x2a;</a>
                         </div>
                     </div>
                     <!-- END Country chooser -->
