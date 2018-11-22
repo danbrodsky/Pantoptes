@@ -33,18 +33,27 @@ include_once("graphing_utils.php");
 
 <div class="container-fluid">
     <div class="row">
-
         <?php include "sidemenu.php"; ?>
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-            <canvas class="my-4 w-100 col-md-6" id="packet_chart"></canvas>
+
+            <div class=" my-4 w-100 h-50 col-md-6 border bg-light border-dark rounded" style="float: right;">
+                <p class="text-justify"> Packet Chart. Click on packet type above graph to filter it out</p>
+            </div>
+            <canvas class="my-4 w-100 col-md-6" id="packet_chart" style="float:left;"></canvas>
+
         </main>
 
+
     </div>
-    <div>
+
+    <div class="row">
         <?php include "sidemenu.php"; ?>
-        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4" style="float: right;">
-            <canvas class="my-4 w-100 col-md-6" id="srccountry_chart"></canvas>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+            <div class=" my-4 w-100 h-50 col-md-6 border border-dark bg-light rounded" style="float: right;">
+                <p class="text-justify"> Packet Country Origin Chart. Click on country abbreviation above graph to filter it out</p>
+            </div>
+            <canvas class="my-4 w-100 col-md-6" id="srccountry_chart" style="float: left;"></canvas>
         </main>
     </div>
 </div>
