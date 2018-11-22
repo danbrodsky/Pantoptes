@@ -47,6 +47,30 @@ include_once("graphing_utils.php");
             <canvas class="my-4 w-100 col-md-6" id="srccountry_chart"></canvas>
         </main>
     </div>
+    <div>
+        <?php include "sidemenu.php"; ?>
+        </div>
+        <main style="width: 75%; float: right;" role="main">
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle btn-sm" type="button"
+                        id="dropdownMenuButton"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                        style="margin-right: 10px;">
+                    <i data-feather="clock"></i> Time range
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a id="" class="time dropdown-item active" href="" >All</a>
+                    <a id="h" class="time dropdown-item" href="" >Last hour</a>
+                    <a id="d" class="time dropdown-item" href="" >Last day</a>
+                    <a id="w" class="time dropdown-item" href="" >Last week</a>
+                    <a id="M" class="time dropdown-item" href="" >Last month</a>
+                </div>
+                <br>
+                <br>
+                <br>
+            <canvas id="time_chart"></canvas>
+        </main>
+    </div>
 </div>
 
 
@@ -64,8 +88,8 @@ include_once("graphing_utils.php");
 </script>
 
 <!-- Graphs -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
-
 <?php
 $traffic_types = num_packets_types($conn);
 $types = json_encode(array_column($traffic_types, "packet_type"), JSON_PRETTY_PRINT);
@@ -129,6 +153,81 @@ $country_colors = json_encode($country_colors, JSON_PRETTY_PRINT);
         type: 'doughnut',
         data: data,
         options: []
+    });
+</script>
+<script>
+    var ctx = document.getElementById("time_chart").getContext('2d');
+
+
+    var timeFormat = 'MM/DD HH:mm';
+
+    function newDateString(hours) {
+        return moment().add(hours, 'w').format(timeFormat);
+    }
+
+    var timeChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [ // Date Objects
+                newDateString(0),
+                newDateString(-1),
+                newDateString(-2),
+                newDateString(-3),
+                newDateString(-4),
+                newDateString(-5),
+                newDateString(-6),
+            ],
+            datasets: [{
+                backgroundColor: 'rgb(255, 99, 132,0.5)',
+                borderColor: 'rgb(255, 99, 132)',
+                fill: true,
+                data: [
+                    100,
+                    400,
+                    800,
+                    200,
+                    400,
+                    100,
+                    700
+                ],
+            }]
+        },
+            options: {
+                title: {
+                    text: 'Packet Frequency'
+                },
+                legend: {
+                    display: false
+                },
+                scales: {
+                    xAxes: [{
+                        type: 'time',
+                        time: {
+                            min: $('.time.active').attr('id') !== '' ? moment().add(-1, $('.time.active').attr('id')) : '',
+                            max: moment(),
+                            parser: timeFormat,
+                            tooltipFormat: 'll HH:mm'
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Time'
+                        }
+                    }],
+                    yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: '# Packets'
+                        }
+                    }]
+                }
+            }
+        });
+    $(document).ready(function() {
+        $(".time").on('click', function (e) {
+            e.preventDefault();
+            timeChart.config.options.scales.xAxes[0].time.min = moment().add(-1, $(this).attr('id'));
+            timeChart.update();
+        });
     });
 </script>
 </body>
