@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7bc0a8903c8a33e7c1bc516f9caadd38",
+    "content-hash": "064421521da73353005fdbae4d829296",
     "packages": [],
     "packages-dev": [
         {
@@ -58,7 +58,8 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "ext-pgsql": "*"
+        "ext-pgsql": "*",
+        "ext-json": "*"
     },
     "platform-dev": []
 }
