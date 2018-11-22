@@ -155,7 +155,7 @@ $query = "SELECT * FROM packets ORDER BY packets.id desc";
                                         }
                                         foreach ($mapRows as $row) {
                                             if ($row["source_longitude"] != 0.0 && $row["source_latitude"] != 0.0 &&
-                                                $row["destination_longitude"] != 0.0 && $row["destination_latitude"])
+                                                $row["destination_longitude"] != 0.0 && $row["destination_latitude"] != 0.0)
                                                 echo "{\"type\":\"Feature\",\"geometry\":{\"type\":\"LineString\",\"coordinates\":[[" . $row["source_longitude"] . "," . $row["source_latitude"] . "], [" . $row["destination_longitude"] . "," . $row["destination_latitude"] . "]]}},";
                                         }
                                         ?>
