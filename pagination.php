@@ -16,6 +16,14 @@ $query = "SELECT * FROM packets";
 $filter = "WHERE ";
 $paginate = "ORDER BY packets.id desc LIMIT $no_of_records_per_page OFFSET $offset  ";
 ?>
+
+<div class="container" align="center">
+    <?php
+     echo  "Page " .$pageno;
+    ?>
+</div>
+
+
 <table class="table table-striped table-sm">
     <thead>
     <tr>
