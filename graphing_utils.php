@@ -35,7 +35,6 @@ function packet_times($conn)
     $query = pg_query($conn, $query);
     while ($row = pg_fetch_assoc($query)) {
         array_push($acc, $row);
-        echo "<script>console.log( 'Debug Objects: " . $row["cnt"] . "' );</script>";
     }
     return $acc;
 }

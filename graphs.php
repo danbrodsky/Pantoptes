@@ -178,7 +178,6 @@ $packet_counts = json_encode(array_column($times, "cnt"), JSON_PRETTY_PRINT);
     var timeFormat = 'MM/DD HH:mm';
 
     function newDateString(epoch) {
-        console.log(moment(epoch*1000).format(timeFormat));
         return moment(epoch*1000).format(timeFormat);
     }
 
@@ -187,8 +186,6 @@ $packet_counts = json_encode(array_column($times, "cnt"), JSON_PRETTY_PRINT);
     times.forEach((item, index) => {
         times[index] = newDateString(times[index]);
     });
-    // times.splice(0,1);
-    console.log(times);
 
 
     var timeChart = new Chart(ctx, {
