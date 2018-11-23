@@ -1,7 +1,8 @@
 {
   "require" : {
     "ext-pgsql": "*",
-    "ext-json": "*"
+    "ext-json": "*",
+    "ext-ctype": "*"
   },
   "require-dev": {
     "heroku/heroku-buildpack-php": "*"

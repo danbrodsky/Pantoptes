@@ -5,41 +5,13 @@ include_once("util.php");
 $no_of_records_per_page = 30;
 
 $total_pages = "SELECT COUNT(*) FROM packets";
-$result= pg_query($conn, $total_pages);
+$result = pg_query($conn, $total_pages);
 $total_rows = pg_fetch_array($result)[0];
 $total_pages = ceil($total_rows / $no_of_records_per_page);
 $query = "SELECT * FROM packets ORDER BY packets.id desc";
 ?>
 
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <title>Panoptes</title>
-
-    <!-- Bootstrap core CSS -->
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
-    <link href="/css/dashboard.css" rel="stylesheet">
-
-    <script src='https://api.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.js'></script>
-    <link href='https://api.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.css' rel='stylesheet'/>
-
-</head>
-
-<body>
-<nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
-    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Panoptes</a>
-    <ul class="navbar-nav px-3">
-        <li class="nav-item text-nowrap">
-            <a class="nav-link" href="#">Sign out</a>
-        </li>
-    </ul>
-
-</nav>
+<?php include("include_head.php"); ?>
 
 <div class="container-fluid">
     <div class="row">
@@ -59,43 +31,53 @@ $query = "SELECT * FROM packets ORDER BY packets.id desc";
                                 id="dropdownMenuButton"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                                 style="margin-right: 10px;">
-                            <i data-feather="server"></i> Tool
+                            <i data-feather="server"></i> Tool (<?php echo num_tools($conn); ?>)
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a id="" class="tool dropdown-item" href="">All Tools</a>
+                            <div class="dropdown-divider"></div>
                             <a id="0" class="tool dropdown-item" href="">Libprotoident</a>
                             <a id="1" class="tool dropdown-item" href="">nDPI</a>
-                            <a id="" class="tool dropdown-item" href="" >&#x2a;</a>
                         </div>
                     </div>
                     <!-- END Tool chooser -->
                     <!-- Protocol chooser -->
+                    <?php
+                    $protocols = get_protocols($conn);
+                    ?>
                     <div class="dropdown">
                         <button class="btn btn-outline-secondary dropdown-toggle btn-sm" type="button"
                                 id="dropdownMenuButton"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                                 style="margin-right: 10px;">
-                            <i data-feather="activity"></i> Protocols
+                            <i data-feather="activity"></i> Protocols (<?php echo count($protocols); ?>)
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <?php foreach (get_protocols($conn) as $protocol_name) {
+                            <a id="" class="protocol dropdown-item" href="">All Protocols</a>
+                            <div class="dropdown-divider"></div>
+                            <?php foreach ($protocols as $protocol_name) {
                                 echo "<a id=\"$protocol_name\" class=\"protocol dropdown-item\" href=\"\">" . $protocol_name . "</a>";
                             } ?>
-                            <a id="" class="protocol dropdown-item" href="" >&#x2a;</a>
                         </div>
                     </div>
                     <!-- END Protocol chooser -->
                     <!-- Country chooser -->
+                    <?php
+                    $countries = get_countries($conn);
+                    ?>
                     <div class="dropdown">
                         <button class="btn btn-outline-secondary dropdown-toggle btn-sm" type="button"
                                 id="dropdownMenuButton"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i data-feather="flag"></i> Countries
+                            <i data-feather="flag"></i> Countries (<?php echo count($countries); ?>)
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <?php foreach (get_countries($conn) as $country_code) {
+                            <a id="" class="country dropdown-item" href="">All Countries</a>
+                            <div class="dropdown-divider"></div>
+                            <?php foreach ($countries as $country_code) {
                                 echo "<a id=\"$country_code\" class=\"country dropdown-item\" href=\"\">" . $country_code . "</a>";
                             } ?>
-                            <a id="" class="country dropdown-item" href="" >&#x2a;</a>
+
                         </div>
                     </div>
                     <!-- END Country chooser -->
@@ -114,24 +96,37 @@ $query = "SELECT * FROM packets ORDER BY packets.id desc";
                 });
                 map.addControl(new mapboxgl.NavigationControl());
             </script>
-            <div>
-                    <button type="button" class="paginate-prev btn btn-outline-secondary" style="float: left;">&laquo; Prev</button>
-                    <button type="button" class="paginate-next btn btn-outline-secondary" style="float: right;">Next &raquo;</button>
-                <p>&nbsp;</p>
+            <div class="row">
+                <div class="col-sm">
+                    <button type="button" class="paginate-prev btn btn-outline-secondary" style="float: left;">
+                        &laquo;
+                        Prev
+                    </button>
+                </div>
+                <div class="col-sm text-center">
+                    <h5>Page <span id="pageno">1</span> of <?php echo $total_pages; ?></h5>
+                </div>
+                <div class="col-sm align-content-end">
+                    <button type="button" class="paginate-next btn btn-outline-secondary" style="float: right;">Next
+                        &raquo;
+                    </button>
+                </div>
                 <div style="margin-top: 0%; margin-bottom: 5%" align="center">
                     <ul class='pagination text-center'>
-                        <?php if(!empty($total_pages)):
-                            for($i=1; $i<=$total_pages; $i++):
-                                if($i == 1):?>
-                                    <li hidden class='active' id="<?php echo $i;?>"><a href=''><?php echo $i;?></a></li>
-                                <?php else:?>
-                                    <li hidden id="<?php echo $i;?>"><a href=''><?php echo $i;?></a></li>
-                                <?php endif;?>
+                        <?php if (!empty($total_pages)):
+                            for ($i = 1; $i <= $total_pages; $i++):
+                                if ($i == 1):?>
+                                    <li hidden class='active' id="<?php echo $i; ?>"><a
+                                                href=''><?php echo $i; ?></a>
+                                    </li>
+                                <?php else: ?>
+                                    <li hidden id="<?php echo $i; ?>"><a href=''><?php echo $i; ?></a></li>
+                                <?php endif; ?>
                             <?php endfor;
-                        endif;?>
+                        endif; ?>
                 </div>
-                <div id="table-content" ></div>
             </div>
+            <div id="table-content"></div>
             <script type="text/javascript">
                 map.on("load", function () {
                     /* Image: An image is loaded and added to the map. */
@@ -154,7 +149,11 @@ $query = "SELECT * FROM packets ORDER BY packets.id desc";
                                             array_push($mapRows, $row); // adds the row to the map array
                                         }
                                         foreach ($mapRows as $row) {
-                                            if ($row["source_longitude"] != 0.0 && $row["source_latitude"] != 0.0 &&
+                                            if ($row["source_country"] == "CN" && $row["destination_longitude"] != 0.0) {
+                                                echo "{\"type\":\"Feature\",\"geometry\":{\"type\":\"LineString\",\"coordinates\":[[29.406838, 106.920059], [" . $row["destination_longitude"] . "," . $row["destination_latitude"] . "]]}},";
+                                            } else if ($row["destination_country"] == "CN" && $row["source_longitude"] != 0.0) {
+                                                echo "{\"type\":\"Feature\",\"geometry\":{\"type\":\"LineString\",\"coordinates\":[" . $row["source_longitude"] . "," . $row["source_latitude"] . "], [29.406838, 106.920059]]}},";
+                                            } else if ($row["source_longitude"] != 0.0 && $row["source_latitude"] != 0.0 &&
                                                 $row["destination_longitude"] != 0.0 && $row["destination_latitude"] != 0.0)
                                                 echo "{\"type\":\"Feature\",\"geometry\":{\"type\":\"LineString\",\"coordinates\":[[" . $row["source_longitude"] . "," . $row["source_latitude"] . "], [" . $row["destination_longitude"] . "," . $row["destination_latitude"] . "]]}},";
                                         }
@@ -193,63 +192,34 @@ $query = "SELECT * FROM packets ORDER BY packets.id desc";
 
 <!-- Graphs -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
-<script>
-    var ctx = document.getElementById("myChart");
-    var myChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-            datasets: [{
-                data: [15339, 21345, 18483, 24003, 23489, 24092, 12034],
-                lineTension: 0,
-                backgroundColor: 'transparent',
-                borderColor: '#007bff',
-                borderWidth: 4,
-                pointBackgroundColor: '#007bff'
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: false
-                    }
-                }]
-            },
-            legend: {
-                display: false,
-            }
-        }
-    });
-</script>
 </body>
 <script>
-    jQuery(document).ready(function() {
+    jQuery(document).ready(function () {
         jQuery("#table-content").load("pagination.php");
 
         let prev = $("button.paginate-prev");
         let next = $("button.paginate-next");
 
-        next.click(function() {
+        next.click(function () {
             if ($('li.active').attr('id') == <?php echo $total_pages; ?> || $('#table-content tr').length < 30)
                 return;
             $('li.active').removeClass('active').next().addClass('active');
             updateTable()
         });
-        prev.click(function() {
+        prev.click(function () {
             if ($('li.active').attr('id') == 1)
                 return;
             $('li.active').removeClass('active').prev().addClass('active');
             updateTable()
         });
 
-        $(".protocol").on('click', function(e){
+        $(".protocol").on('click', function (e) {
             changeAttr.call(this, '.protocol', e);
         });
-        $(".country").on('click', function(e){
+        $(".country").on('click', function (e) {
             changeAttr.call(this, '.country', e);
         });
-        $(".tool").on('click', function(e){
+        $(".tool").on('click', function (e) {
             changeAttr.call(this, '.tool', e);
         });
 

@@ -85,16 +85,33 @@ function print_row($arr, $row)
     echo "</tr>";
 }
 
-function get_packet_count($conn) {
+function get_packet_count($conn)
+{
     $query = "SELECT count(id) FROM packets";
     $query = pg_query($conn, $query);
-    return pg_fetch_result($query,0,0);
+    return pg_fetch_result($query, 0, 0);
 }
 
-function debug_to_console( $data) {
+function debug_to_console($data)
+{
     $output = $data;
-    if ( is_array( $output ) )
-        $output = implode( ',', $output);
+    if (is_array($output))
+        $output = implode(',', $output);
 
     echo "<script>console.log( 'Debug Objects: " . $output . "' );</script>";
+}
+
+function num_tools($conn)
+{
+    $query = "SELECT count(DISTINCT tool) FROM packets";
+    $query = pg_query($conn, $query);
+    return pg_fetch_result($query, 0, 0);
+}
+
+function relativeTime($ts): string
+{
+    $currentTime = DateTime::createFromFormat('U', $ts);
+    $currentTime->setTimezone(new DateTimeZone("PST"));
+    $formatted = $currentTime->format('Y-m-d H:i:s');
+    return $formatted;
 }
