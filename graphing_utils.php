@@ -27,3 +27,15 @@ function num_countries($conn)
     }
     return $acc;
 }
+
+function packet_times($conn)
+{
+    $acc = array();
+    $query = "SELECT timestamp, count(timestamp) as cnt FROM packets GROUP BY timestamp ORDER BY timestamp asc";
+    $query = pg_query($conn, $query);
+    while ($row = pg_fetch_assoc($query)) {
+        array_push($acc, $row);
+        echo "<script>console.log( 'Debug Objects: " . $row["cnt"] . "' );</script>";
+    }
+    return $acc;
+}

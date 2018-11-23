@@ -56,6 +56,31 @@ include_once("graphing_utils.php");
             <canvas class="my-4 w-100 col-md-6" id="srccountry_chart" style="float: left;"></canvas>
         </main>
     </div>
+    <div>
+        <?php include "sidemenu.php"; ?>
+        </div>
+        <main style="width: 75%; float: right;" role="main">
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle btn-sm" type="button"
+                        id="dropdownMenuButton"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                        style="margin-right: 10px;">
+                    <i data-feather="clock"></i> Time range
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a id="" class="time dropdown-item active" href="" >All time</a>
+                    <a id="h" class="time dropdown-item" href="" >Last hour</a>
+                    <a id="d" class="time dropdown-item" href="" >Last day</a>
+                    <a id="w" class="time dropdown-item" href="" >Last week</a>
+                    <a id="M" class="time dropdown-item" href="" >Last month</a>
+
+                </div>
+                <br>
+                <br>
+                <br>
+            <canvas id="time_chart"></canvas>
+        </main>
+    </div>
 </div>
 
 
@@ -73,8 +98,8 @@ include_once("graphing_utils.php");
 </script>
 
 <!-- Graphs -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
-
 <?php
 $traffic_types = num_packets_types($conn);
 $types = json_encode(array_column($traffic_types, "packet_type"), JSON_PRETTY_PRINT);
@@ -138,6 +163,86 @@ $country_colors = json_encode($country_colors, JSON_PRETTY_PRINT);
         type: 'doughnut',
         data: data,
         options: []
+    });
+</script>
+
+<?php
+$times = packet_times($conn);
+$types = json_encode(array_column($times, "timestamp"), JSON_PRETTY_PRINT);
+$packet_counts = json_encode(array_column($times, "cnt"), JSON_PRETTY_PRINT);
+?>
+<script>
+    var ctx = document.getElementById("time_chart").getContext('2d');
+
+
+    var timeFormat = 'MM/DD HH:mm';
+
+    function newDateString(epoch) {
+        console.log(moment(epoch*1000).format(timeFormat));
+        return moment(epoch*1000).format(timeFormat);
+    }
+
+    <?php echo "var times = ". $types . ";\n"; ?>
+
+    times.forEach((item, index) => {
+        times[index] = newDateString(times[index]);
+    });
+    // times.splice(0,1);
+    console.log(times);
+
+
+    var timeChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: times,
+            datasets: [{
+                backgroundColor: 'rgb(255, 99, 132,0.5)',
+                borderColor: 'rgb(255, 99, 132)',
+                fill: true,
+                data: <?php echo $packet_counts; ?>,
+            }]
+        },
+            options: {
+                title: {
+                    text: 'Packet Frequency'
+                },
+                legend: {
+                    display: false
+                },
+                scales: {
+                    xAxes: [{
+                        type: 'time',
+                        time: {
+                            min: '',
+                            parser: timeFormat,
+                            tooltipFormat: 'll HH:mm'
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Time'
+                        }
+                    }],
+                    yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: '# Packets'
+                        }
+                    }]
+                }
+            }
+        });
+    $(document).ready(function() {
+        $(".time").on('click', function (e) {
+            e.preventDefault();
+            if ($(this).attr('id') == ''){
+                timeChart.config.options.scales.xAxes[0].time.min = undefined;
+                timeChart.config.options.scales.xAxes[0].time.max = undefined;
+            }
+            else {
+                timeChart.config.options.scales.xAxes[0].time.min = moment().add(-1, $(this).attr('id'));
+            }
+            timeChart.update();
+        });
     });
 </script>
 </body>
