@@ -59,11 +59,12 @@ include_once("graphing_utils.php");
                     <i data-feather="clock"></i> Time range
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a id="" class="time dropdown-item active" href="" >All</a>
+                    <a id="" class="time dropdown-item active" href="" >All time</a>
                     <a id="h" class="time dropdown-item" href="" >Last hour</a>
                     <a id="d" class="time dropdown-item" href="" >Last day</a>
                     <a id="w" class="time dropdown-item" href="" >Last week</a>
                     <a id="M" class="time dropdown-item" href="" >Last month</a>
+
                 </div>
                 <br>
                 <br>
@@ -155,41 +156,41 @@ $country_colors = json_encode($country_colors, JSON_PRETTY_PRINT);
         options: []
     });
 </script>
+
+<?php
+$times = packet_times($conn);
+$types = json_encode(array_column($times, "timestamp"), JSON_PRETTY_PRINT);
+$packet_counts = json_encode(array_column($times, "cnt"), JSON_PRETTY_PRINT);
+?>
 <script>
     var ctx = document.getElementById("time_chart").getContext('2d');
 
 
     var timeFormat = 'MM/DD HH:mm';
 
-    function newDateString(hours) {
-        return moment().add(hours, 'w').format(timeFormat);
+    function newDateString(epoch) {
+        console.log(moment(epoch*1000).format(timeFormat));
+        return moment(epoch*1000).format(timeFormat);
     }
+
+    <?php echo "var times = ". $types . ";\n"; ?>
+
+    times.forEach((item, index) => {
+        times[index] = newDateString(times[index]);
+    });
+    // times.splice(0,1);
+    console.log(times);
+
 
     var timeChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: [ // Date Objects
-                newDateString(0),
-                newDateString(-1),
-                newDateString(-2),
-                newDateString(-3),
-                newDateString(-4),
-                newDateString(-5),
-                newDateString(-6),
-            ],
+            labels: times,
             datasets: [{
                 backgroundColor: 'rgb(255, 99, 132,0.5)',
                 borderColor: 'rgb(255, 99, 132)',
                 fill: true,
-                data: [
-                    100,
-                    400,
-                    800,
-                    200,
-                    400,
-                    100,
-                    700
-                ],
+                data: <?php echo $packet_counts; ?>,
             }]
         },
             options: {
@@ -203,8 +204,7 @@ $country_colors = json_encode($country_colors, JSON_PRETTY_PRINT);
                     xAxes: [{
                         type: 'time',
                         time: {
-                            min: $('.time.active').attr('id') !== '' ? moment().add(-1, $('.time.active').attr('id')) : '',
-                            max: moment(),
+                            min: '',
                             parser: timeFormat,
                             tooltipFormat: 'll HH:mm'
                         },
@@ -225,7 +225,13 @@ $country_colors = json_encode($country_colors, JSON_PRETTY_PRINT);
     $(document).ready(function() {
         $(".time").on('click', function (e) {
             e.preventDefault();
-            timeChart.config.options.scales.xAxes[0].time.min = moment().add(-1, $(this).attr('id'));
+            if ($(this).attr('id') == ''){
+                timeChart.config.options.scales.xAxes[0].time.min = undefined;
+                timeChart.config.options.scales.xAxes[0].time.max = undefined;
+            }
+            else {
+                timeChart.config.options.scales.xAxes[0].time.min = moment().add(-1, $(this).attr('id'));
+            }
             timeChart.update();
         });
     });
