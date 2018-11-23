@@ -115,3 +115,10 @@ function relativeTime($ts): string
     $formatted = $currentTime->format('Y-m-d H:i:s');
     return $formatted;
 }
+
+function num_nodes($conn): string
+{
+    $query = "SELECT count(DISTINCT node_id) FROM packets";
+    $query = pg_query($conn, $query);
+    return pg_fetch_result($query, 0, 0);
+}
