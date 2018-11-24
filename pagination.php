@@ -61,6 +61,7 @@ $paginate = "ORDER BY packets.id desc LIMIT $no_of_records_per_page OFFSET $offs
     };
 
     $query = $query . ' ' . $filter . ' ' . $paginate;
+    $map_query = substr($query, 0, strpos($query, "LIMIT"));
     $query = pg_query($conn, $query);
     while ($row = pg_fetch_assoc($query)) {
         $srcCountry = $row["source_country"] !== null ? trim($row["source_country"]) : "";
@@ -88,5 +89,31 @@ $paginate = "ORDER BY packets.id desc LIMIT $no_of_records_per_page OFFSET $offs
 <script>
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
-    })
+    });
+
+    map.getSource('packet-info').setData({
+        type: "FeatureCollection",
+        features: [<?php
+            $map_query = pg_query($conn, $map_query);
+            $mapRows = array();
+            while ($row = pg_fetch_assoc($map_query)) {
+                array_push($mapRows, $row);
+            }
+            foreach ($mapRows as $row) {
+                $srcCountry = $row["source_country"] !== null ? trim($row["source_country"]) : "";
+                $dstCountry = $row["destination_country"] !== null ? trim($row["destination_country"]) : "";
+                if ($row["source_country"] == "CN" && $row["destination_longitude"] != 0.0) {
+                    echo "{\"type\":\"Feature\",\"geometry\":{\"type\":\"LineString\",\"coordinates\":[[29.406838, 106.920059], [" . $row["destination_longitude"] . "," . $row["destination_latitude"] . "]]}},";
+                } else if ($row["destination_country"] == "CN" && $row["source_longitude"] != 0.0) {
+                    echo "{\"type\":\"Feature\",\"geometry\":{\"type\":\"LineString\",\"coordinates\":[" . $row["source_longitude"] . "," . $row["source_latitude"] . "], [29.406838, 106.920059]]}},";
+                } else if ($row["source_longitude"] != 0.0 && $row["source_latitude"] != 0.0 &&
+                    $row["destination_longitude"] != 0.0 && $row["destination_latitude"] != 0.0) {
+                    echo "{\"type\":\"Feature\",\"geometry\":{\"type\":\"LineString\",\"coordinates\":[[" . $row["source_longitude"] . "," . $row["source_latitude"] . "], [" . $row["destination_longitude"] . "," . $row["destination_latitude"] . "]]}},";
+                    echo "{\"type\": \"Feature\",\"properties\":{\"description\":\"<img src='/img/flags/" . strtolower($srcCountry) . ".png' height='13' /> " . $row["source_ip"] . " <small><strong><a href='https://apps.db.ripe.net/db-web-ui/#/query?searchtext=".$row["source_ip"]."'>[w]</a></strong></small>\", \"icon\": \"custom-marker\"},\"geometry\": {\"type\": \"Point\",\"coordinates\": [" . $row["source_longitude"] . "," . $row["source_latitude"] . "]}},";
+                    echo "{\"type\": \"Feature\",\"properties\":{\"description\":\"<img src='/img/flags/" . strtolower($dstCountry) . ".png' height='15' /> " . $row["destination_ip"] . "  <small><strong><a href='https://apps.db.ripe.net/db-web-ui/#/query?searchtext=".$row["destination_ip"]."'>[w]</a></strong></small>\", \"icon\": \"custom-marker\"},\"geometry\": {\"type\": \"Point\",\"coordinates\": [" . $row["destination_longitude"] . "," . $row["destination_latitude"] . "]}},";
+                }
+            }
+            ?>
+        ]
+    });
 </script>

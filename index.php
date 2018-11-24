@@ -8,11 +8,10 @@ $total_pages = "SELECT COUNT(*) FROM packets";
 $result = pg_query($conn, $total_pages);
 $total_rows = pg_fetch_array($result)[0];
 $total_pages = ceil($total_rows / $no_of_records_per_page);
-$query = "SELECT * FROM packets ORDER BY packets.id desc";
+$init_query = "SELECT * FROM packets ORDER BY packets.id desc";
 ?>
 
 <?php include("include_head.php"); ?>
-
 <div class="container-fluid">
     <div class="row">
 
@@ -22,7 +21,7 @@ $query = "SELECT * FROM packets ORDER BY packets.id desc";
             <div class="btn-toolbar mb-2 mb-md-0" style="padding-top: 20px;">
 
                 <h1 class="h2">Dashboard
-                    <small class="text-muted"><?php echo get_packet_count($conn); ?> packets collected</small>
+                    <small class="text-muted"><?php echo get_packet_count($conn); ?> flows identified</small>
                 </h1>
                 <div class="btn-toolbar mb-2 mb-md-0" style="position: absolute; right: 20px;">
                     <!-- Tool chooser -->
@@ -130,37 +129,53 @@ $query = "SELECT * FROM packets ORDER BY packets.id desc";
             <script type="text/javascript">
                 map.on("load", function () {
                     /* Image: An image is loaded and added to the map. */
-                    map.loadImage("https://i.imgur.com/MK4NUzI.png", function (error, image) {
+                    map.loadImage("https://i.imgur.com/H2vUTYX.png", function (error, image) {
                         if (error) throw error;
                         map.addImage("custom-marker", image);
                         /* Style layer: A style layer ties together the source and image and specifies how they are displayed on the map. */
+                        map.addSource("packet-info", {
+                            type: "geojson",
+                            data: {
+                                type: "FeatureCollection",
+                                features: [<?php
+                                    $init_query = pg_query($conn, $init_query);
+                                    $mapRows = array();
+                                    while ($row = pg_fetch_assoc($init_query)) {
+                                        array_push($mapRows, $row); // adds the row to the map array
+                                    }
+                                    foreach ($mapRows as $row) {
+                                        $srcCountry = $row["source_country"] !== null ? trim($row["source_country"]) : "";
+                                        $dstCountry = $row["destination_country"] !== null ? trim($row["destination_country"]) : "";
+                                        if ($row["source_country"] == "CN" && $row["destination_longitude"] != 0.0) {
+                                            echo "{\"type\":\"Feature\",\"geometry\":{\"type\":\"LineString\",\"coordinates\":[[29.406838, 106.920059], [" . $row["destination_longitude"] . "," . $row["destination_latitude"] . "]]}},";
+                                        } else if ($row["destination_country"] == "CN" && $row["source_longitude"] != 0.0) {
+                                            echo "{\"type\":\"Feature\",\"geometry\":{\"type\":\"LineString\",\"coordinates\":[" . $row["source_longitude"] . "," . $row["source_latitude"] . "], [29.406838, 106.920059]]}},";
+                                        } else if ($row["source_longitude"] != 0.0 && $row["source_latitude"] != 0.0 &&
+                                            $row["destination_longitude"] != 0.0 && $row["destination_latitude"] != 0.0) {
+                                            echo "{\"type\":\"Feature\",\"geometry\":{\"type\":\"LineString\",\"coordinates\":[[" . $row["source_longitude"] . "," . $row["source_latitude"] . "], [" . $row["destination_longitude"] . "," . $row["destination_latitude"] . "]]}},";
+                                            echo "{\"type\": \"Feature\",\"properties\":{\"description\":\"<img src='/img/flags/" . strtolower($srcCountry) . ".png' height='13' /> " . $row["source_ip"] . " <small><strong><a href='https://apps.db.ripe.net/db-web-ui/#/query?searchtext=".$row["source_ip"]."'>[w]</a></strong></small>\", \"icon\": \"custom-marker\"},\"geometry\": {\"type\": \"Point\",\"coordinates\": [" . $row["source_longitude"] . "," . $row["source_latitude"] . "]}},";
+                                            echo "{\"type\": \"Feature\",\"properties\":{\"description\":\"<img src='/img/flags/" . strtolower($dstCountry) . ".png' height='15' /> " . $row["destination_ip"] . "  <small><strong><a href='https://apps.db.ripe.net/db-web-ui/#/query?searchtext=".$row["destination_ip"]."'>[w]</a></strong></small>\", \"icon\": \"custom-marker\"},\"geometry\": {\"type\": \"Point\",\"coordinates\": [" . $row["destination_longitude"] . "," . $row["destination_latitude"] . "]}},";
+                                        }
+                                    }
+                                    ?>
+                                ]
+                            }
+                        });
+                        map.addLayer({
+                            id: "locations",
+                            type: "symbol",
+                            source: "packet-info",
+                            layout: {
+                                "icon-image": "{icon}",
+                                "icon-allow-overlap": true
+                            },
+                            "filter": ["==", "$type", "Point"]
+                        });
                         map.addLayer({
                             id: "route",
                             type: "line",
                             /* Source: A data source specifies the geographic coordinate where the image marker gets placed. */
-                            source: {
-                                type: "geojson",
-                                data: {
-                                    type: "FeatureCollection",
-                                    features: [<?php
-                                        $query = pg_query($conn, $query);
-                                        $mapRows = array();
-                                        while ($row = pg_fetch_assoc($query)) {
-                                            array_push($mapRows, $row); // adds the row to the map array
-                                        }
-                                        foreach ($mapRows as $row) {
-                                            if ($row["source_country"] == "CN" && $row["destination_longitude"] != 0.0) {
-                                                echo "{\"type\":\"Feature\",\"geometry\":{\"type\":\"LineString\",\"coordinates\":[[29.406838, 106.920059], [" . $row["destination_longitude"] . "," . $row["destination_latitude"] . "]]}},";
-                                            } else if ($row["destination_country"] == "CN" && $row["source_longitude"] != 0.0) {
-                                                echo "{\"type\":\"Feature\",\"geometry\":{\"type\":\"LineString\",\"coordinates\":[" . $row["source_longitude"] . "," . $row["source_latitude"] . "], [29.406838, 106.920059]]}},";
-                                            } else if ($row["source_longitude"] != 0.0 && $row["source_latitude"] != 0.0 &&
-                                                $row["destination_longitude"] != 0.0 && $row["destination_latitude"] != 0.0)
-                                                echo "{\"type\":\"Feature\",\"geometry\":{\"type\":\"LineString\",\"coordinates\":[[" . $row["source_longitude"] . "," . $row["source_latitude"] . "], [" . $row["destination_longitude"] . "," . $row["destination_latitude"] . "]]}},";
-                                        }
-                                        ?>
-                                    ]
-                                }
-                            },
+                            source: "packet-info",
                             layout: {
                                 "line-join": "round",
                                 "line-cap": "round"
@@ -168,7 +183,38 @@ $query = "SELECT * FROM packets ORDER BY packets.id desc";
                             "paint": {
                                 "line-color": "red",
                                 "line-width": 1
+                            },
+                            "filter": ["==", "$type", "LineString"]
+                        });
+
+                        var popup = new mapboxgl.Popup({
+                            closeButton: false,
+                            closeOnClick: true,
+                            className: 'popup'
+                        });
+
+                        // Change the cursor to a pointer when the mouse is over the places layer.
+                        map.on('mouseenter', 'locations', function (e) {
+                            map.getCanvas().style.cursor = 'pointer';
+
+                            var coordinates = e.features[0].geometry.coordinates.slice();
+                            var description = e.features[0].properties.description;
+
+                            // Ensure that if the map is zoomed out such that multiple
+                            // copies of the feature are visible, the popup appears
+                            // over the copy being pointed to.
+                            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                                coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
                             }
+
+                            popup
+                                .setLngLat(coordinates)
+                                .setHTML(description)
+                                .addTo(map);
+                        });
+
+                        map.on('mouseleave', 'locations', function () {
+                            map.getCanvas().style.cursor = '';
                         });
                     });
                 });
@@ -241,5 +287,16 @@ $query = "SELECT * FROM packets ORDER BY packets.id desc";
         }
     });
 </script>
+<style>
+    .mapboxgl-popup-content {
+        color: #ffffff;
+        background-color: #000000;
+        opacity: 0.8;
+    }
+    .mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip, .mapboxgl-popup-anchor-top .mapboxgl-popup-tip {
+        border-bottom-color: #000000;
+        border-top-color: #000000;
+    }
+</style>
 </html>
 
