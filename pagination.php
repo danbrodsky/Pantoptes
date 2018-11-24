@@ -2,8 +2,8 @@
 include_once("vendor/autoload.php");
 include_once("util.php");
 
-if (isset($_GET['pageno']) and $_GET["pageno"] != '') {
-    $pageno = $_GET['pageno'];
+if (isset($_GET['pageno']) and pg_escape_string($_GET["pageno"]) != '') {
+    $pageno = pg_escape_string($_GET['pageno']);
 } else {
     $pageno = 1;
 }
@@ -49,15 +49,15 @@ $paginate = "ORDER BY packets.id desc LIMIT $no_of_records_per_page OFFSET $offs
         $tool = preg_replace('/[^-a-zA-Z0-9_]/', '', $_GET["tool"]);
     }
     if ($protocol != '') {
-        $filter .= "packet_type = '" . $_GET["protocol"] . "'";
+        $filter .= "packet_type = '" . pg_escape_string($_GET["protocol"]) . "'";
     } else {
         $filter .= "1=1";
     };
     if ($country != '') {
-        $filter .= " AND source_country = '" . $_GET["country"] . "'";
+        $filter .= " AND source_country = '" . pg_escape_string($_GET["country"]) . "'";
     };
     if ($tool != '') {
-        $filter .= " AND tool = " . $_GET["tool"];
+        $filter .= " AND tool = " . pg_escape_string($_GET["tool"]);
     };
 
     $query = $query . ' ' . $filter . ' ' . $paginate;
