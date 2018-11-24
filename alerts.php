@@ -2,6 +2,10 @@
 include_once("vendor/autoload.php");
 include_once("util.php");
 include_once("graphing_utils.php");
+
+$query_alerts = "SELECT * FROM alerts_settings";
+$result = pg_query($conn, $query_alerts);
+
 ?>
 
 <?php include("include_head.php"); ?>
@@ -23,24 +27,33 @@ include_once("graphing_utils.php");
             </a>
             <div class="card" style="margin-top: 20px;">
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
-                        <h5>Alert #1: Telegram messages to China</h5><a href="/alerts.php">
-                            <button type="button" class="btn btn-danger btn-sm float-right"><i
-                                        data-feather="trash-2"></i> Delete
-                            </button>
-                        </a>
-                        <p>An email will be sent to <code>andrea@gottardo.me</code> if <i>outgoing</i>
-                            <code>Telegram</code> traffic is detected towards country code <code>CN</code>.</p>
-                    </li>
-                    <li class="list-group-item">
-                        <h5>Alert #2: SSH incoming connections</h5><a href="/alerts.php">
-                            <button type="button" class="btn btn-danger btn-sm float-right"><i
-                                        data-feather="trash-2"></i> Delete
-                            </button>
-                        </a>
-                        <p>An email will be sent to <code>andrea@gottardo.me</code> if <i>incoming</i> <code>SSH</code>
-                            traffic is detected.</p>
-                    </li>
+                    <?php
+                    while ($row = pg_fetch_assoc($result)) { ?>
+                        <li class="list-group-item">
+                            <?php
+                            if ($row["source_country"] != "XX") {
+                                $from = " from country code <code>".$row["source_country"]."</code>";
+                            }
+                            if ($row["source_ip"] != "") {
+                                $from = " from IP address <code>".$row["source_ip"]."</code>";
+                            }
+                            if ($row["destination_country"] != "XX") {
+                                $to = " to country code <code>".$row["destination_country"]."</code>";
+                            }
+                            if ($row["destination_ip"] != "") {
+                                $to = " to IP address <code>".$row["destination_ip"]."</code>";
+                            }
+                            ?>
+                            <h5>Alert #<?php echo $row["id"]; ?>: <?php echo $row["alert_name"]; ?></h5><a href="/delete_alert.php?id=<?php echo $row["id"]; ?>">
+                                <button type="button" class="btn btn-danger btn-sm float-right"><i
+                                            data-feather="trash-2"></i> Delete
+                                </button>
+                            </a>
+                            <p>An email will be sent to <code><?php echo $row["email"]; ?></code> if
+                                <strong><?php echo $row["kind"]; ?></strong> traffic is detected
+                            <?php if (isset($from)) echo $from; ?> <?php if (isset($to)) echo $to; ?></p>
+                        </li>
+                    <?php } ?>
                 </ul>
             </div>
         </main>

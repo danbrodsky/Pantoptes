@@ -25,7 +25,7 @@
             <li class="nav-item">
                 <a class="nav-link active" href="/alerts.php">
                     <span data-feather="bell"></span>
-                    Alerts <span class="badge badge-primary"> 2</span>
+                    Alerts <span class="badge badge-primary"> <?php echo num_alerts($conn); ?></span>
                 </a>
             </li>
             <div style="margin-top: 10px; margin-left: 15px; margin-right: 15px;">

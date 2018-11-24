@@ -3,3 +3,5 @@ vendor/*
 .idea/vcs.xml
 .idea/workspace.xml
 workspace.xml
+*.meta
+*.xml
