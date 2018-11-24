@@ -18,8 +18,22 @@ if (isset($_POST["set"])) {
         $shouldWarn = true;
     } else {
         $email = pg_escape_string($_POST["email"]);
-        $toolID =
-        $addQuery = "INSERT INTO \"public\".\"alerts_settings\" (\"id\", \"alert_name\", \"kind\", \"source_ip\", \"destination_ip\", \"tool\", \"source_country\", \"destination_country\", \"email\") VALUES (DEFAULT, '" . $alert_name . "', '".$kind."', '".$sourceIP."', '".$destinationIP."', 1, '".$sourceCountry."', '".$destinationCountry."', '".$email."')";
+        $toolID = tool_string_to_id($tool);
+        if ($sourceCountry == "Any Country") {
+            $sourceCountry = "XX";
+        }
+        if ($destinationCountry == "Any Country") {
+            $destinationCountry = "XX";
+        }
+        $addQuery = "INSERT INTO \"public\".\"alerts_settings\" (\"id\", \"alert_name\", \"kind\", \"source_ip\", \"destination_ip\", \"tool\", \"source_country\", \"destination_country\", \"email\") VALUES (DEFAULT, '" . $alert_name . "', '" . $kind . "', '" . $sourceIP . "', '" . $destinationIP . "', " . $toolID . ", '" . $sourceCountry . "', '" . $destinationCountry . "', '" . $email . "')";
+        if (pg_query($conn, $addQuery)) {
+            header("Location: /alerts.php?success=true");
+        } else {
+            $error = pg_last_error($conn);
+            echo $error;
+            die();
+        }
+
     }
 }
 

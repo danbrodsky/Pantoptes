@@ -33,8 +33,10 @@ function tool_string_to_id($tool_string): int
 {
     if ($tool_string == "Libprotoident") {
         return 0;
-    } else {
+    } else if ($tool_string == "nDPI") {
         return 1;
+    } else {
+        return 2; // "Any Tool"
     }
 }
 
