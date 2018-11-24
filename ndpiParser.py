@@ -31,9 +31,10 @@ def readDataFromJSON(jsonFile):
 def parseFlows(data):
     parsedFlows = []
     print(data)
+    timestamp = int(time.time())
     flows = json.loads(data)['known.flows']
     for flow in flows:
-         parsedFlows.append({ "NodeIP": "TODO: Add this", "NodeID": "TODO: Add this", "Tool": "ndpi", "SourceIP": flow['host_a.name'], "SourcePort": int(flow['host_a.port']), "DestinationIP": flow['host_b.name'], "DestinationPort": int(flow['host_b.port']), "Type": flow['detected.protocol.name'] })
+        parsedFlows.append({ "NodeIP": "TODO: Add this", "NodeID": "TODO: Add this", "Tool": "ndpi", "SourceIP": flow['host_a.name'], "SourcePort": int(flow['host_a.port']), "DestinationIP": flow['host_b.name'], "DestinationPort": int(flow['host_b.port']), "Type": flow['detected.protocol.name'], "Timestamp": timestamp })
     return parsedFlows
 
 @exception

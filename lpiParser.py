@@ -25,8 +25,7 @@ def getFlows(interface, timeout):
 @exception
 def parseFlows(flows):
     parsedFlows = []
-    timestamp = time.time()
-
+    timestamp = int(time.time())
     for flow in flows:
          data = flow.split(" ")
          parsedFlows.append({ "NodeIP": "TODO: Add this", "NodeID": "TODO: Add this", "Tool": "libprotoident", "SourceIP": data[1], "SourcePort": int(data[3]), "DestinationIP": data[2], "DestinationPort": int(data[4]), "Type": data[0], "Timestamp": timestamp })
