@@ -194,8 +194,8 @@ $query = "SELECT * FROM packets ORDER BY packets.id desc";
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
 </body>
 <script>
-    jQuery(document).ready(function () {
-        jQuery("#table-content").load("pagination.php");
+    $(document).ready(function () {
+        $("#table-content").load("pagination.php");
 
         let prev = $("button.paginate-prev");
         let next = $("button.paginate-next");
@@ -225,8 +225,8 @@ $query = "SELECT * FROM packets ORDER BY packets.id desc";
 
         function changeAttr(attr, e) {
             e.preventDefault();
-            jQuery(attr).removeClass('active');
-            jQuery(this).addClass('active');
+            $(attr).removeClass('active');
+            $(this).addClass('active');
             $('ul.pagination > li.active').removeClass('active');
             $('ul.pagination > li:first').addClass('active');
             updateTable()
@@ -237,7 +237,7 @@ $query = "SELECT * FROM packets ORDER BY packets.id desc";
             let protocol = $.trim($('.protocol.active').attr('id'));
             let country = $.trim($('.country.active').attr('id'));
             let tool = $.trim($('.tool.active').attr('id'));
-            jQuery("#table-content").load("pagination.php?pageno=" + pageNum + "&protocol=" + protocol + "&country=" + country + "&tool=" + tool);
+            $("#table-content").load("pagination.php?pageno=" + pageNum + "&protocol=" + protocol + "&country=" + country + "&tool=" + tool);
         }
     });
 </script>

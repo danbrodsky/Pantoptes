@@ -1,3 +1,5 @@
+<html>
+<body>
 <?php
 include_once("vendor/autoload.php");
 include_once("util.php");
@@ -10,52 +12,43 @@ include_once("graphing_utils.php");
     <div class="row">
         <?php include "sidemenu.php"; ?>
 
-        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-
-            <div class=" my-4 w-100 h-50 col-md-6 border bg-light border-dark rounded" style="float: right;">
-                <p class="text-justify"> Packet Chart. Click on packet type above graph to filter it out</p>
-            </div>
-            <canvas class="my-4 w-100 col-md-6" id="packet_chart" style="float:left;"></canvas>
-
-        </main>
-
-
-    </div>
-
-    <div class="row">
-        <?php include "sidemenu.php"; ?>
-        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-            <div class=" my-4 w-100 h-50 col-md-6 border border-dark bg-light rounded" style="float: right;">
-                <p class="text-justify"> Packet Country Origin Chart. Click on country abbreviation above graph to filter it out</p>
-            </div>
-            <canvas class="my-4 w-100 col-md-6" id="srccountry_chart" style="float: left;"></canvas>
+        <main style="display:inline-block;" role="main" class="col-md-9 ml-sm-auto col-lg-10 col-lg-10 px-4">
+            <canvas class="my-4 w-100 col-md-6" id="packet_chart" style="display:inline-block; float: left;"></canvas>
+            <canvas class="my-4 w-100 col-md-6" id="srccountry_chart" style="display:inline-block;float: right;"></canvas>
+            <span style="margin-left: 40%;" data-toggle="tooltip" data-placement="top" data-html="true" title="<b>Flow Protocol Chart</b><br>Click on protocol type above graph to filter it out">
+                <i style= "width: 30px; height: 30px; color: grey;" data-feather="info" ></i>
+            </span>
+            <span style="float: right; margin-right: 10%;" data-toggle="tooltip" data-placement="top" data-html="true" title="<b>Packet Source Country Chart</b><br>Click on country abbreviation above graph to filter it out">
+                <i style= "width: 30px; height: 30px; color: grey;" data-feather="info" ></i>
+            </span>
         </main>
     </div>
     <div>
         <?php include "sidemenu.php"; ?>
-        </div>
-        <main style="width: 75%; float: right;" role="main">
-            <div class="dropdown">
-                <button class="btn btn-outline-secondary dropdown-toggle btn-sm" type="button"
-                        id="dropdownMenuButton"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                        style="margin-right: 10px;">
-                    <i data-feather="clock"></i> Time range
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a id="" class="time dropdown-item active" href="" >All time</a>
-                    <a id="h" class="time dropdown-item" href="" >Last hour</a>
-                    <a id="d" class="time dropdown-item" href="" >Last day</a>
-                    <a id="w" class="time dropdown-item" href="" >Last week</a>
-                    <a id="M" class="time dropdown-item" href="" >Last month</a>
-
-                </div>
-                <br>
-                <br>
-                <br>
-            <canvas id="time_chart"></canvas>
-        </main>
     </div>
+    <main style="width: 83%; height: 38%; float: right;" role="main">
+        <div style="float: left;" data-toggle="tooltip" data-placement="right" data-html="true" title="<b>Flow Frequency Chart</b><br> Displays the number of unique flows over a given time interval">
+            <i style= "width: 30px; height: 30px; color: grey;" data-feather="info" ></i>
+        </div>
+        <div class="dropdown" style="float: right; margin-right: 5%;">
+            <button class="btn btn-outline-secondary dropdown-toggle btn-sm" type="button"
+                    id="dropdownMenuButton"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                    style="margin-right: 10px;">
+                <i data-feather="clock"></i> Time range
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a id="" class="time dropdown-item active" href="" >All time</a>
+                <a id="h" class="time dropdown-item" href="" >Last hour</a>
+                <a id="d" class="time dropdown-item" href="" >Last day</a>
+                <a id="w" class="time dropdown-item" href="" >Last week</a>
+                <a id="M" class="time dropdown-item" href="" >Last month</a>
+            </div>
+        </div>
+        <br>
+        <br>
+        <canvas style="display: inline-block;" id="time_chart"></canvas>
+    </main>
 </div>
 
 
@@ -174,39 +167,38 @@ $packet_counts = json_encode(array_column($times, "cnt"), JSON_PRETTY_PRINT);
                 data: <?php echo $packet_counts; ?>,
             }]
         },
-            options: {
-                title: {
-                    text: 'Packet Frequency'
-                },
-                legend: {
-                    display: false
-                },
-                scales: {
-                    xAxes: [{
-                        type: 'time',
-                        time: {
-                            min: '',
-                            parser: timeFormat,
-                            tooltipFormat: 'll HH:mm'
-                        },
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'Time'
-                        }
-                    }],
-                    yAxes: [{
-                        scaleLabel: {
-                            display: true,
-                            labelString: '# Packets'
-                        }
-                    }]
-                }
+        options: {
+            title: {
+                text: 'Flow Frequency'
+            },
+            maintainAspectRatio: false,
+            legend: false,
+            scales: {
+                xAxes: [{
+                    type: 'time',
+                    time: {
+                        min: '',
+                        parser: timeFormat,
+                        tooltipFormat: 'll HH:mm'
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Time'
+                    }
+                }],
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: '# Flows Detected'
+                    }
+                }]
             }
-        });
+        }
+    });
     $(document).ready(function() {
         $(".time").on('click', function (e) {
             e.preventDefault();
-            if ($(this).attr('id') == ''){
+            if ($(this).attr('id') === ''){
                 timeChart.config.options.scales.xAxes[0].time.min = undefined;
                 timeChart.config.options.scales.xAxes[0].time.max = undefined;
             }
@@ -218,5 +210,10 @@ $packet_counts = json_encode(array_column($times, "cnt"), JSON_PRETTY_PRINT);
     });
 </script>
 </body>
+<script>
+    $('[data-toggle="tooltip"]').tooltip({
+        trigger : 'click'
+    });
+</script>
 </html>
 
