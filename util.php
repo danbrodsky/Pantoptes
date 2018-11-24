@@ -15,12 +15,26 @@ $conn = pg_connect(getenv("DATABASE_URL"));
  * @param $tool_id 0 (libprotoident) or 1 (nDPI)
  * @return string
  */
-function tool_id_to_string($tool_id)
+function tool_id_to_string($tool_id): string
 {
     if ($tool_id == "0") {
         return "Libprotoident";
     } else {
         return "nDPI";
+    }
+}
+
+/**
+ * Returns the SQL id of the tool name used to capture a packet.
+ * @param $tool_string "Libprotoident" or "nDPI"
+ * @return int
+ */
+function tool_string_to_id($tool_string): int
+{
+    if ($tool_string == "Libprotoident") {
+        return 0;
+    } else {
+        return 1;
     }
 }
 
