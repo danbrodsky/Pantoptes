@@ -138,3 +138,10 @@ function num_nodes($conn): string
     $query = pg_query($conn, $query);
     return pg_fetch_result($query, 0, 0);
 }
+
+function num_alerts($conn): int
+{
+    $query = "SELECT count(id) FROM alerts_settings";
+    $query = pg_query($conn, $query);
+    return pg_fetch_result($query, 0, 0);
+}
