@@ -7,7 +7,7 @@
  */
 // Uncomment the following line to debug from your machine (tells your local PHP instance where to find the DB).
 // Comment it out before pushing to master!
-putenv("DATABASE_URL=postgres://eqdvefruwrhirc:57bbdd00b6b88481eebeeea8c11b52776d0ec96f9e3dd9a21d12f6d9376b9a62@ec2-54-83-27-162.compute-1.amazonaws.com:5432/dqt8lhkkbe5h7");
+putenv("DATABASE_URL=postgres://gqkqouwvcbqcxj:08280bcdf02c7fc7bb6ed6c8efb37b1b935e8b3b05af7d4e49efeface347b45f@ec2-50-17-203-51.compute-1.amazonaws.com:5432/d1b0iek4l5cc73");
 $conn = pg_connect(getenv("DATABASE_URL"));
 
 /**
