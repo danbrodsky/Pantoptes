@@ -103,7 +103,18 @@ $colors = json_encode($colors, JSON_PRETTY_PRINT);
 
 <?php
 $country_types = num_countries($conn);
-$types = json_encode(array_column($country_types, "source_country"), JSON_PRETTY_PRINT);
+$type_array = array_column($country_types, "source_country");
+
+for ($i = 0; $i < count($country_types); $i++) {
+    if($type_array[$i] == "    "){
+       $type_array[$i] = "unknown";
+    }
+}
+
+$types = json_encode(($type_array), JSON_PRETTY_PRINT);
+
+
+
 $country_counts = json_encode(array_column($country_types, "cnt"), JSON_PRETTY_PRINT);
 $country_colors = array();
 for ($i = 0; $i < count($country_types); $i++) {
@@ -125,7 +136,9 @@ $country_colors = json_encode($country_colors, JSON_PRETTY_PRINT);
         }],
 
         // These labels appear in the legend and in the tooltips when hovering different arcs
-        labels: <?php echo $types; ?>
+        labels: <?php
+            echo $types;
+        ?>
     };
     var myDoughnutChart = new Chart(ctx, {
         type: 'doughnut',
