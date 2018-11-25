@@ -1,3 +1,5 @@
+<html>
+<body>
 <?php
 include_once("vendor/autoload.php");
 include_once("util.php");
@@ -90,8 +92,10 @@ $init_query = "SELECT * FROM packets ORDER BY packets.id desc";
                 var map = new mapboxgl.Map({
                     container: 'map',
                     style: 'mapbox://styles/mapbox/dark-v9',
-                    center: [-123.1, 49.25],
-                    zoom: 5
+                    center: [-117.4, 47.6],
+                    zoom: 4,
+                    bearing: 145,
+                    pitch: 90
                 });
                 map.addControl(new mapboxgl.NavigationControl());
             </script>
@@ -286,6 +290,7 @@ $init_query = "SELECT * FROM packets ORDER BY packets.id desc";
             $("#table-content").load("pagination.php?pageno=" + pageNum + "&protocol=" + protocol + "&country=" + country + "&tool=" + tool);
         }
     });
+
 </script>
 <style>
     .mapboxgl-popup-content {
