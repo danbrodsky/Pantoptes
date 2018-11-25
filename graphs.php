@@ -191,12 +191,13 @@ $packet_counts = json_encode(array_column($times, "cnt"), JSON_PRETTY_PRINT);
                     type: 'time',
                     time: {
                         min: '',
-                        unit: 'day',
                         parser: timeFormat,
                         tooltipFormat: 'll HH:mm:ss',
-                        unitStepSize: 1,
                         displayFormats: {
-                            'day': 'MMM DD HH:mm'
+                            'day': 'MMM DD HH:mm',
+                            'minute': 'MMM DD HH:mm',
+                            'month': 'MMM DD HH:mm',
+                            'hour': 'MMM DD HH:mm'
                         }
                     },
                     scaleLabel: {
