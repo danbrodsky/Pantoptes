@@ -10,7 +10,6 @@ $total_pages = "SELECT COUNT(*) FROM packets";
 $result = pg_query($conn, $total_pages);
 $total_rows = pg_fetch_array($result)[0];
 $total_pages = ceil($total_rows / $no_of_records_per_page);
-$init_query = "SELECT * FROM packets ORDER BY packets.id desc";
 ?>
 
 <?php include("include_head.php"); ?>
@@ -85,7 +84,7 @@ $init_query = "SELECT * FROM packets ORDER BY packets.id desc";
                 </div>
             </div>
 
-            <div class="my-4 w-100" id='map' style="height: 300px;"></div>
+            <div class="my-4 w-100" id='map' style="height: 500px;"></div>
 
             <script type="text/javascript">
                 mapboxgl.accessToken = 'pk.eyJ1IjoiYWdvdHRhcmRvIiwiYSI6ImlQNEYtcWcifQ.2GSJXDBB7oMK61Ey9Dtzww';
@@ -141,28 +140,7 @@ $init_query = "SELECT * FROM packets ORDER BY packets.id desc";
                             type: "geojson",
                             data: {
                                 type: "FeatureCollection",
-                                features: [<?php
-                                    $init_query = pg_query($conn, $init_query);
-                                    $mapRows = array();
-                                    while ($row = pg_fetch_assoc($init_query)) {
-                                        array_push($mapRows, $row); // adds the row to the map array
-                                    }
-                                    foreach ($mapRows as $row) {
-                                        $srcCountry = $row["source_country"] !== null ? trim($row["source_country"]) : "";
-                                        $dstCountry = $row["destination_country"] !== null ? trim($row["destination_country"]) : "";
-                                        if ($row["source_country"] == "CN" && $row["destination_longitude"] != 0.0) {
-                                            echo "{\"type\":\"Feature\",\"geometry\":{\"type\":\"LineString\",\"coordinates\":[[29.406838, 106.920059], [" . $row["destination_longitude"] . "," . $row["destination_latitude"] . "]]}},";
-                                        } else if ($row["destination_country"] == "CN" && $row["source_longitude"] != 0.0) {
-                                            echo "{\"type\":\"Feature\",\"geometry\":{\"type\":\"LineString\",\"coordinates\":[" . $row["source_longitude"] . "," . $row["source_latitude"] . "], [29.406838, 106.920059]]}},";
-                                        } else if ($row["source_longitude"] != 0.0 && $row["source_latitude"] != 0.0 &&
-                                            $row["destination_longitude"] != 0.0 && $row["destination_latitude"] != 0.0) {
-                                            echo "{\"type\":\"Feature\",\"geometry\":{\"type\":\"LineString\",\"coordinates\":[[" . $row["source_longitude"] . "," . $row["source_latitude"] . "], [" . $row["destination_longitude"] . "," . $row["destination_latitude"] . "]]}},";
-                                            echo "{\"type\": \"Feature\",\"properties\":{\"description\":\"<img src='/img/flags/" . strtolower($srcCountry) . ".png' height='13' /> " . $row["source_ip"] . " <small><strong><a href='https://apps.db.ripe.net/db-web-ui/#/query?searchtext=".$row["source_ip"]."'>[w]</a></strong></small>\", \"icon\": \"custom-marker\"},\"geometry\": {\"type\": \"Point\",\"coordinates\": [" . $row["source_longitude"] . "," . $row["source_latitude"] . "]}},";
-                                            echo "{\"type\": \"Feature\",\"properties\":{\"description\":\"<img src='/img/flags/" . strtolower($dstCountry) . ".png' height='15' /> " . $row["destination_ip"] . "  <small><strong><a href='https://apps.db.ripe.net/db-web-ui/#/query?searchtext=".$row["destination_ip"]."'>[w]</a></strong></small>\", \"icon\": \"custom-marker\"},\"geometry\": {\"type\": \"Point\",\"coordinates\": [" . $row["destination_longitude"] . "," . $row["destination_latitude"] . "]}},";
-                                        }
-                                    }
-                                    ?>
-                                ]
+                                features: []
                             }
                         });
                         map.addLayer({
