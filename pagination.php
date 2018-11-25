@@ -17,10 +17,6 @@ $filter = "WHERE ";
 $paginate = "ORDER BY packets.id desc LIMIT $no_of_records_per_page OFFSET $offset  ";
 ?>
 
-<script type="text/javascript">
-    document.getElementById("pageno").innerHTML = "<?php echo $pageno; ?>";
-</script>
-
 <table class="table table-striped table-sm table-hover">
     <thead class="thead-light">
     <tr>
@@ -95,9 +91,20 @@ $paginate = "ORDER BY packets.id desc LIMIT $no_of_records_per_page OFFSET $offs
         }
         echo "</tr>";
     }
+
+    $total_pages = "SELECT COUNT(*) FROM packets " . $filter;
+
+    $result = pg_query($conn, $total_pages);
+    $total_rows = pg_fetch_array($result)[0];
+    $total_pages = ceil($total_rows / $no_of_records_per_page);
+
     ?>
     </tbody>
 </table>
+<script type="text/javascript">
+    document.getElementById("pageno").innerHTML = "<?php echo $pageno; ?>";
+    document.getElementById("totalpages").innerHTML = "<?php echo $total_pages; ?>";
+</script>
 <script>
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()

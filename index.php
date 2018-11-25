@@ -106,7 +106,7 @@ $total_pages = ceil($total_rows / $no_of_records_per_page);
                     </button>
                 </div>
                 <div class="col-sm text-center">
-                    <h5>Page <span id="pageno">1</span> of <?php echo $total_pages; ?></h5>
+                    <h5>Page <span id="pageno">0</span> of <span id="totalpages">0</span> </h5>
                 </div>
                 <div class="col-sm align-content-end">
                     <button type="button" class="paginate-next btn btn-outline-secondary" style="float: right;">Next
@@ -229,7 +229,7 @@ $total_pages = ceil($total_rows / $no_of_records_per_page);
         let next = $("button.paginate-next");
 
         next.click(function () {
-            if ($('li.active').attr('id') == <?php echo $total_pages; ?> || $('#table-content tr').length < 30)
+            if ($('li.active').attr('id') == $("#totalpages").val() || $('#table-content tr').length < 30)
                 return;
             $('li.active').removeClass('active').next().addClass('active');
             updateTable()
