@@ -156,7 +156,7 @@ $packet_counts = json_encode(array_column($times, "cnt"), JSON_PRETTY_PRINT);
     var ctx = document.getElementById("time_chart").getContext('2d');
 
 
-    var timeFormat = 'MM/DD HH:mm';
+    var timeFormat = 'MM/DD HH:mm:ss';
 
     function newDateString(epoch) {
         return moment(epoch*1000).format(timeFormat);
@@ -191,8 +191,13 @@ $packet_counts = json_encode(array_column($times, "cnt"), JSON_PRETTY_PRINT);
                     type: 'time',
                     time: {
                         min: '',
+                        unit: 'day',
                         parser: timeFormat,
-                        tooltipFormat: 'll HH:mm'
+                        tooltipFormat: 'll HH:mm:ss',
+                        unitStepSize: 1,
+                        displayFormats: {
+                            'day': 'MMM DD HH:mm'
+                        }
                     },
                     scaleLabel: {
                         display: true,
