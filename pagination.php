@@ -60,10 +60,22 @@ $paginate = "ORDER BY packets.id desc LIMIT $no_of_records_per_page OFFSET $offs
         $filter .= " AND tool = " . pg_escape_string($_GET["tool"]);
     };
 
+
     $query = $query . ' ' . $filter . ' ' . $paginate;
     $map_query = substr($query, 0, strpos($query, "LIMIT"));
     $query = pg_query($conn, $query);
+
     while ($row = pg_fetch_assoc($query)) {
+        if ($row["source_ip"] == "10.0.0.5"){
+            $row["source_country"] = "us";
+            $row["source_longitude"] = "-122.121513";
+            $row["source_latitude"] = "47.673988";
+        }
+        if ($row["destination_ip"] == "10.0.0.5"){
+            $row["destination_country"] = "us";
+            $row["destination_longitude"] = "-122.121513";
+            $row["destination_latitude"] = "47.673988";
+        }
         $srcCountry = $row["source_country"] !== null ? trim($row["source_country"]) : "";
         $dstCountry = $row["destination_country"] !== null ? trim($row["destination_country"]) : "";
         echo "<tr>";
@@ -72,14 +84,14 @@ $paginate = "ORDER BY packets.id desc LIMIT $no_of_records_per_page OFFSET $offs
         echo "<td>" . tool_id_to_string($row["tool"]) . "</td>";
         echo "<td>" . $row["packet_type"] . " <small><strong>" . $row["source_port"] . "→" . $row["destination_port"] . "</strong></small></td>";
         if ($srcCountry != "") {
-            echo "<td data-toggle=\"tooltip\" data-placement=\"top\" title='".gethostbyaddr($row["source_ip"])."'><img src='/img/flags/" . strtolower($srcCountry) . ".png' height='13' /> " . $row["source_ip"] . " <small><strong><a class='text-dark' href='https://apps.db.ripe.net/db-web-ui/#/query?searchtext=".$row["source_ip"]."'>[w]</a></strong></small></td>";
+            echo "<td class=\"flowRow\" data-toggle=\"tooltip\" data-placement=\"top\" title='" . gethostbyaddr($row['source_ip']) . "'><img src='/img/flags/" . strtolower($srcCountry) . ".png' height='13' /> " . $row["source_ip"] . " <small><strong><a class='text-dark' href='https://apps.db.ripe.net/db-web-ui/#/query?searchtext=".$row["source_ip"]."'>[w]</a></strong></small></td>";
         } else {
-            echo "<td data-toggle=\"tooltip\" data-placement=\"top\" title='".gethostbyaddr($row["source_ip"])."'>" . $row["source_ip"] . " <small><strong><a class='text-dark' href='https://apps.db.ripe.net/db-web-ui/#/query?searchtext=".$row["source_ip"]."'>[w]</a></strong></small></td>";
+            echo "<td class=\"flowRow\" data-toggle=\"tooltip\" data-placement=\"top\" title='" . gethostbyaddr($row['source_ip']) . "'>" . $row["source_ip"] . " <small><strong><a class='text-dark' href='https://apps.db.ripe.net/db-web-ui/#/query?searchtext=".$row["source_ip"]."'>[w]</a></strong></small></td>";
         }
         if ($dstCountry != "") {
-            echo "<td data-toggle=\"tooltip\" data-placement=\"top\" title='".gethostbyaddr($row["destination_ip"])."'><img src='/img/flags/" . strtolower($dstCountry) . ".png' height='15' /> " . $row["destination_ip"] . "  <small><strong><a class='text-dark' href='https://apps.db.ripe.net/db-web-ui/#/query?searchtext=".$row["destination_ip"]."'>[w]</a></strong></small></td>";
+            echo "<td class=\"flowRow\" data-toggle=\"tooltip\" data-placement=\"top\" title='" . gethostbyaddr($row['destination_ip']) . "'><img src='/img/flags/" . strtolower($dstCountry) . ".png' height='15' /> " . $row["destination_ip"] . "  <small><strong><a class='text-dark' href='https://apps.db.ripe.net/db-web-ui/#/query?searchtext=".$row["destination_ip"]."'>[w]</a></strong></small></td>";
         } else {
-            echo "<td data-toggle=\"tooltip\" data-placement=\"top\" title='".gethostbyaddr($row["destination_ip"])."'>" . $row["destination_ip"] . " <small><strong><a class='text-dark' href='https://apps.db.ripe.net/db-web-ui/#/query?searchtext=".$row["destination_ip"]."'>[w]</a></strong></small></td>";
+            echo "<td class=\"flowRow\" data-toggle=\"tooltip\" data-placement=\"top\" title='" . gethostbyaddr($row['destination_ip']) . "'>" . $row["destination_ip"] . " <small><strong><a class='text-dark' href='https://apps.db.ripe.net/db-web-ui/#/query?searchtext=".$row["destination_ip"]."'>[w]</a></strong></small></td>";
         }
         echo "</tr>";
     }
@@ -100,6 +112,16 @@ $paginate = "ORDER BY packets.id desc LIMIT $no_of_records_per_page OFFSET $offs
                 array_push($mapRows, $row);
             }
             foreach ($mapRows as $row) {
+                if ($row["source_ip"] == "10.0.0.5"){
+                    $row["source_country"] = "us";
+                    $row["source_longitude"] = "-122.121513";
+                    $row["source_latitude"] = "47.673988";
+                }
+                if ($row["destination_ip"] == "10.0.0.5"){
+                    $row["destination_country"] = "us";
+                    $row["destination_longitude"] = "-122.121513";
+                    $row["destination_latitude"] = "47.673988";
+                }
                 $srcCountry = $row["source_country"] !== null ? trim($row["source_country"]) : "";
                 $dstCountry = $row["destination_country"] !== null ? trim($row["destination_country"]) : "";
                 if ($row["source_country"] == "CN" && $row["destination_longitude"] != 0.0) {
@@ -109,8 +131,8 @@ $paginate = "ORDER BY packets.id desc LIMIT $no_of_records_per_page OFFSET $offs
                 } else if ($row["source_longitude"] != 0.0 && $row["source_latitude"] != 0.0 &&
                     $row["destination_longitude"] != 0.0 && $row["destination_latitude"] != 0.0) {
                     echo "{\"type\":\"Feature\",\"geometry\":{\"type\":\"LineString\",\"coordinates\":[[" . $row["source_longitude"] . "," . $row["source_latitude"] . "], [" . $row["destination_longitude"] . "," . $row["destination_latitude"] . "]]}},";
-                    echo "{\"type\": \"Feature\",\"properties\":{\"description\":\"<img src='/img/flags/" . strtolower($srcCountry) . ".png' height='13' /> " . $row["source_ip"] . " <small><strong><a href='https://apps.db.ripe.net/db-web-ui/#/query?searchtext=".$row["source_ip"]."'>[w]</a></strong></small>\", \"icon\": \"custom-marker\"},\"geometry\": {\"type\": \"Point\",\"coordinates\": [" . $row["source_longitude"] . "," . $row["source_latitude"] . "]}},";
-                    echo "{\"type\": \"Feature\",\"properties\":{\"description\":\"<img src='/img/flags/" . strtolower($dstCountry) . ".png' height='15' /> " . $row["destination_ip"] . "  <small><strong><a href='https://apps.db.ripe.net/db-web-ui/#/query?searchtext=".$row["destination_ip"]."'>[w]</a></strong></small>\", \"icon\": \"custom-marker\"},\"geometry\": {\"type\": \"Point\",\"coordinates\": [" . $row["destination_longitude"] . "," . $row["destination_latitude"] . "]}},";
+                    echo "{\"type\": \"Feature\",\"properties\":{\"description\":\"<img src='/img/flags/" . strtolower($srcCountry) . ".png' height='13' /> " . $row["source_ip"] . " <small><strong><a href='https://apps.db.ripe.net/db-web-ui/#/query?searchtext=" . $row["source_ip"] . "'>[w]</a></strong></small>\", \"icon\": \"custom-marker\"},\"geometry\": {\"type\": \"Point\",\"coordinates\": [" . $row["source_longitude"] . "," . $row["source_latitude"] . "]}},";
+                    echo "{\"type\": \"Feature\",\"properties\":{\"description\":\"<img src='/img/flags/" . strtolower($dstCountry) . ".png' height='15' /> " . $row["destination_ip"] . "  <small><strong><a href='https://apps.db.ripe.net/db-web-ui/#/query?searchtext=" . $row["destination_ip"] . "'>[w]</a></strong></small>\", \"icon\": \"custom-marker\"},\"geometry\": {\"type\": \"Point\",\"coordinates\": [" . $row["destination_longitude"] . "," . $row["destination_latitude"] . "]}},";
                 }
             }
             ?>
