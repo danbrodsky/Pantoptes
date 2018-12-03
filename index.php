@@ -33,7 +33,7 @@ $total_pages = ceil($total_rows / $no_of_records_per_page);
                                 style="margin-right: 10px;">
                             <i data-feather="server"></i> Tool (<?php echo num_tools($conn); ?>)
                         </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="max-height: 300px;">
                             <a id="" class="tool dropdown-item" href="">All Tools</a>
                             <div class="dropdown-divider"></div>
                             <a id="0" class="tool dropdown-item" href="">Libprotoident</a>
@@ -52,7 +52,7 @@ $total_pages = ceil($total_rows / $no_of_records_per_page);
                                 style="margin-right: 10px;">
                             <i data-feather="activity"></i> Protocols (<?php echo count($protocols); ?>)
                         </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="max-height: 300px; overflow: scroll;">
                             <a id="" class="protocol dropdown-item" href="">All Protocols</a>
                             <div class="dropdown-divider"></div>
                             <?php foreach ($protocols as $protocol_name) {
@@ -71,7 +71,7 @@ $total_pages = ceil($total_rows / $no_of_records_per_page);
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i data-feather="flag"></i> Countries (<?php echo count($countries); ?>)
                         </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="max-height: 300px; overflow: scroll;">
                             <a id="" class="country dropdown-item" href="">All Countries</a>
                             <div class="dropdown-divider"></div>
                             <?php foreach ($countries as $country_code) {
